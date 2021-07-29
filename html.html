@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIU PIU</title>
+    <link rel="stylesheet" href="css.css">
+</head>
+<body>
+    <section id="game">
+        <div class="background black"></div>
+        <img src="./assets/wallpaper.jpg" alt="" class="background" id="wallpaper">
+        <div class="container">
+            <div class="healthbar">
+                <div class="health"></div>
+            </div>
+            <div id="gameboard">
+                <div class="arrow" id="bottom-left">
+                    <div id="glow-bottom-left" class="glow"></div>
+                    <img src="./assets/botleft grey.png" class="default-arrow">
+                    <img src="./assets/botleft white.png" id="bottom-left white" class="white">
+                </div>
+                <div class="arrow" id="top-left">
+                    <div id="glow-top-left" class="glow"></div>
+                    <img src="./assets/topleft grey.png" class="default-arrow">
+                    <img src="./assets/topleft white.png" id="top-left white" class="white">
+                </div>
+                <div class="arrow" id="middle">
+                    <div id="glow-middle" class="glow"></div>
+                    <img src="./assets/middle grey.png" class="default-arrow">
+                    <img src="./assets/middle white.png" id="middle white" class="white">
+                </div>
+                <div class="arrow" id="top-right">
+                    <div id="glow-top-right" class="glow"></div>
+                    <img src="./assets/topright grey.png" class="default-arrow">
+                    <img src="./assets/topright white.png" id="top-right white" class="white">
+                </div>
+                <div class="arrow" id="bottom-right">
+                    <div id="glow-bottom-right" class="glow"></div>
+                    <img src="./assets/botright grey.png" class="default-arrow">
+                    <img src="./assets/botright white.png" id="bottom-right white" class="white">
+                </div>
+                <img src="./assets/bot hold.png" class="hold">
+                <img src="./assets/botleft.png" class="hold-top">
+                <img src="./assets/botleft.png" class="hold-bottom">
+            </div>
+        </div>
+    </section>
+    <script src="app.js"></script>
+</body>
+</html>
