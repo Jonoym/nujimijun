@@ -12,6 +12,12 @@ class Controller {
         this.topRight = false;
         this.bottomRight = false;
 
+        this.botLeftTimer;
+        this.topLeftTimer;
+        this.middleTimer;
+        this.topRightTimer;
+        this.botRightTimer;
+
 
         document.addEventListener('keydown', this.handlePress.bind(this));
         document.addEventListener('keyup', this.handleRelease.bind(this));
@@ -43,8 +49,10 @@ class Controller {
         if (this.bottomLeft === false) {
             this.bottomLeft = true;
             this.logic.pressPiece(1, false);
-        } else {
-            this.logic.pressPiece(1, true);
+
+            this.botLeftTimer = setInterval(() => {
+                this.logic.pressPiece(1, true);
+            }), 50;
         }
     }
     
@@ -56,9 +64,11 @@ class Controller {
         if (this.topLeft === false) {
             this.topLeft = true;
             this.logic.pressPiece(2, false);
-        } else {
-            this.logic.pressPiece(2, true);
-        }
+
+            this.topLeftTimer = setInterval(() => {
+                this.logic.pressPiece(2, true);
+            }), 50;
+        } 
     }
     
     middlePress() {
@@ -68,10 +78,11 @@ class Controller {
 
         if (this.middle === false) {
             this.middle = true;
-
             this.logic.pressPiece(3, false);
-        } else {
-            this.logic.pressPiece(3, true);
+
+            this.middleTimer = setInterval(() => {
+                this.logic.pressPiece(3, true);
+            }), 50;
         }
     }
     
@@ -83,9 +94,11 @@ class Controller {
         if (this.topRight === false) {
             this.topRight = true;
             this.logic.pressPiece(4, false);
-        } else {
-            this.logic.pressPiece(4, true);
-        }
+
+            this.topRightTimer = setInterval(() => {
+                this.logic.pressPiece(4, true);
+            }), 50;
+        } 
     }
     
     bottomRightPress() {
@@ -96,8 +109,10 @@ class Controller {
         if (this.bottomRight === false) {
             this.bottomLeft = true;
             this.logic.pressPiece(5, false);
-        } else {
-            this.logic.pressPiece(5, true);
+
+            this.botRightTimer = setInterval(() => {
+                this.logic.pressPiece(5, true);
+            }), 50;
         }
     }
 
@@ -128,6 +143,7 @@ class Controller {
     }
 
     bottomLeftRelease() {
+        clearInterval(this.botLeftTimer);
         this.bottomLeft = false;
         const bottomLeft = document.getElementById("glow-bottom-left");
         const bottomLeftWhite = document.getElementById("bottom-left white");
@@ -136,6 +152,7 @@ class Controller {
     }
     
     topLeftRelease() {
+        clearInterval(this.topLeftTimer);
         this.topLeft = false;
         const topLeft = document.getElementById("glow-top-left");
         const topLeftWhite = document.getElementById("top-left white");
@@ -144,6 +161,7 @@ class Controller {
     }
     
     middleRelease() {
+        clearInterval(this.middleTimer);
         this.middle = false;
         const middle = document.getElementById("glow-middle");
         const middleWhite = document.getElementById("middle white");
@@ -152,6 +170,7 @@ class Controller {
     }
     
     topRightRelease() {
+        clearInterval(this.topRightTimer);
         this.topRight = false;
         const topRight = document.getElementById("glow-top-right");
         const topRightWhite = document.getElementById("top-right white");
@@ -160,6 +179,7 @@ class Controller {
     }
     
     bottomRightRelease() {
+        clearInterval(this.botRightTimer);
         this.bottomLeft = false;
         const bottomRight = document.getElementById("glow-bottom-right");
         const bottomRightWhite = document.getElementById("bottom-right white");
@@ -237,7 +257,7 @@ class Logic {
                     queue = this.botLeftQueue;
                 }
                 if (this.botLeftHoldQueue[0] != undefined) {
-                    timeDifference = currentTime - this.botLeftHoldQueue[0][1] - 1850;
+                    timeDifference = currentTime - this.botLeftHoldQueue[0][1] - 1830;
                     holdQueue = this.botLeftHoldQueue;
                 }
                 break;
@@ -302,16 +322,14 @@ class Logic {
         }
 
         if (holdQueue != undefined && holdQueue[0][2] != true) {
-            //console.log(timeDifference);
             absoluteDifference = Math.abs(timeDifference);
-            if (absoluteDifference < 20) {
+            if (absoluteDifference < 30) {
                 console.log("PERFECT");
                 holdQueue[0][0].style.opacity = "0";
                 holdQueue[0][2] = true;
             }
         }
     }
-
 
     gameLoop() {
         
@@ -455,7 +473,7 @@ class Logic {
                 queue.shift();
                 element.removeChild(arrowStart);
                 arrowStart = undefined;
-            }, 2020);
+            }, 2000);
 
             for (let i = 1; i < holdLength; i++) {
                 let hold = document.createElement("img");
@@ -470,14 +488,13 @@ class Logic {
                         console.log("MISS");
                     }
                     queue.shift();
-                    arrowStart = undefined;
-                }, 2020 + this.pieceDelay  * i);
+                    hold = undefined;
+                }, 2000 + this.pieceDelay * i);
             }
 
             queue.push([arrowEnd, arrowTime + this.pieceDelay * holdLength]);
 
             setTimeout(() => {
-
                 let date = new Date();
                 currentTime = date.getSeconds() * 1000 + date.getMilliseconds();
                 if (currentTime > arrowTime + this.pieceDelay * holdLength + 2000 && queue[0][2] != true) {
@@ -485,18 +502,17 @@ class Logic {
                 }
                 queue.shift();
                 element.removeChild(arrowEnd);
-                arrowStart = undefined;
-            }, 2020 + this.pieceDelay * holdLength);
+                arrowEnd = undefined;
+            }, 2000 + this.pieceDelay * holdLength);
         }
 
-        console.log(queue);
         setTimeout(()=> {
             arrowStart.style.transform = "translateY(-165vh)"
-        }, 20);
+        }, 0);
 
         setTimeout(()=> {
             arrowEnd.style.transform = "translateY(-165vh)"
-        }, 20 + this.pieceDelay * holdLength);
+        }, 0 + this.pieceDelay * holdLength);
     }
 }
 
@@ -541,7 +557,7 @@ var map3 = "1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0
 
 var map4 = "4 -1\n4 -1\n4 -1\n4 -1";
 
-var map5 = "1,2 10\n";
+var map5 = "1 10\n\n\n2 3";
 
 const logic = new Logic();
 const controller = new Controller(logic);
