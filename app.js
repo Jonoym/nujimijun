@@ -36,57 +36,68 @@ class Controller {
     }
 
     bottomLeftPress() {
+        const bottomLeft = document.getElementById("glow-bottom-left");
+        const bottomLeftWhite = document.getElementById("bottom-left white");
+        this.arrowFlash(bottomLeft, bottomLeftWhite, BOTTOM);
+
         if (this.bottomLeft === false) {
             this.bottomLeft = true;
-            const bottomLeft = document.getElementById("glow-bottom-left");
-            const bottomLeftWhite = document.getElementById("bottom-left white");
-        
-            this.logic.pressPiece(1);
-            this.arrowFlash(bottomLeft, bottomLeftWhite, BOTTOM);
+            this.logic.pressPiece(1, false);
+        } else {
+            this.logic.pressPiece(1, true);
         }
     }
     
     topLeftPress() {
+        const topLeft = document.getElementById("glow-top-left");
+        const topLeftWhite = document.getElementById("top-left white");
+        this.arrowFlash(topLeft, topLeftWhite, TOP);
+
         if (this.topLeft === false) {
             this.topLeft = true;
-            const topLeft = document.getElementById("glow-top-left");
-            const topLeftWhite = document.getElementById("top-left white");
-        
-            this.logic.pressPiece(2);
-            this.arrowFlash(topLeft, topLeftWhite, TOP);
+            this.logic.pressPiece(2, false);
+        } else {
+            this.logic.pressPiece(2, true);
         }
     }
     
     middlePress() {
+        const middle = document.getElementById("glow-middle");
+        const middleWhite = document.getElementById("middle white");
+        this.arrowFlash(middle, middleWhite, MIDDLE);
+
         if (this.middle === false) {
             this.middle = true;
-            const middle = document.getElementById("glow-middle");
-            const middleWhite = document.getElementById("middle white");
-        
-            this.logic.pressPiece(3);
-            this.arrowFlash(middle, middleWhite, MIDDLE);
+
+            this.logic.pressPiece(3, false);
+        } else {
+            this.logic.pressPiece(3, true);
         }
     }
     
     topRightPress() {
+        const topRight = document.getElementById("glow-top-right");
+        const topRightWhite = document.getElementById("top-right white");
+        this.arrowFlash(topRight, topRightWhite, TOP);
+
         if (this.topRight === false) {
             this.topRight = true;
-            const topRight = document.getElementById("glow-top-right");
-            const topRightWhite = document.getElementById("top-right white");
-        
-            this.logic.pressPiece(4);
-            this.arrowFlash(topRight, topRightWhite, TOP);
+            this.logic.pressPiece(4, false);
+        } else {
+            this.logic.pressPiece(4, true);
         }
     }
     
     bottomRightPress() {
+        const bottomRight = document.getElementById("glow-bottom-right");
+        const bottomRightWhite = document.getElementById("bottom-right white");
+        this.arrowFlash(bottomRight, bottomRightWhite, BOTTOM);
+
         if (this.bottomRight === false) {
             this.bottomLeft = true;
-            const bottomRight = document.getElementById("glow-bottom-right");
-            const bottomRightWhite = document.getElementById("bottom-right white");
-        
-            this.logic.pressPiece(5);
-            this.arrowFlash(bottomRight, bottomRightWhite, BOTTOM);
+            this.logic.pressPiece(5, false);
+        } else {
+            this.logic.pressPiece(5, true);
         }
     }
 
@@ -170,7 +181,6 @@ class Controller {
 class Logic {
 
     constructor() {
-        this.logic = this;
         this.timerID = null;
 
         this.botLeftQueue = [];
@@ -192,6 +202,7 @@ class Logic {
 
     setGame(track, bpm) {
         this.game = new Game(track, bpm);
+        this.pieceDelay = 60000/bpm;
     }
 
     getGame() {
@@ -200,7 +211,7 @@ class Logic {
 
     startGame() {
         this.gameStart = true;
-        this.timerID = setInterval(this.gameLoop.bind(this), 60000/this.game.bpm);
+        this.timerID = setInterval(this.gameLoop.bind(this), this.pieceDelay);
     }
 
     getTrack() {
@@ -211,57 +222,70 @@ class Logic {
         return this.game.getTrack().shift();
     }
 
-    pressPiece(position) {
+    pressPiece(position, held) {
         var d = new Date();
         var currentTime = d.getSeconds() * 1000 + d.getMilliseconds();
-        let element;
         let timeDifference;
         let absoluteDifference;
         let queue;
+        let holdQueue;
+
         switch (position) {
             case 1:
-                if (this.logic.botLeftQueue[0] === undefined) {
-                    break;
+                if (this.botLeftQueue[0] != undefined) {
+                    timeDifference = currentTime - this.botLeftQueue[0][1] - 1850;
+                    queue = this.botLeftQueue;
                 }
-                timeDifference = currentTime - this.logic.botLeftQueue[0][1] - 1850;
-                queue = this.botLeftQueue;
-                element = "bottom-left";
+                if (this.botLeftHoldQueue[0] != undefined) {
+                    timeDifference = currentTime - this.botLeftHoldQueue[0][1] - 1850;
+                    holdQueue = this.botLeftHoldQueue;
+                }
                 break;
             case 2:
-                if (this.logic.topLeftQueue[0] === undefined) {
-                    break;
+                if (this.topLeftQueue[0] != undefined) {
+                    timeDifference = currentTime - this.topLeftQueue[0][1] - 1850;
+                    queue = this.topLeftQueue;
                 }
-                timeDifference = currentTime - this.logic.topLeftQueue[0][1] - 1850;
-                queue = this.topLeftQueue;
-                element = "top-left";
+                if (this.topLeftHoldQueue[0] != undefined) {
+                    timeDifference = currentTime - this.topLeftHoldQueue[0][1] - 1850;
+                    holdQueue = this.topLeftHoldQueue;
+                }
                 break;
             case 3:
-                if (this.logic.middleQueue[0] === undefined) {
-                    break;
+                if (this.middleQueue[0] != undefined) {
+                    timeDifference = currentTime - this.middleQueue[0][1] - 1850;
+                    queue = this.middleQueue;
                 }
-                timeDifference = currentTime - this.logic.middleQueue[0][1] - 1850;
-                queue = this.middleQueue;
-                element = "middle-left";
+                if (this.middleHoldQueue[0] != undefined) {
+                    timeDifference = currentTime - this.middleHoldQueue[0][1] - 1850;
+                    holdQueue = this.middleHoldQueue;
+                }
                 break;
             case 4:
-                if (this.logic.topRightQueue[0] === undefined) {
-                    break;
+                if (this.topRightQueue[0] != undefined) {
+                    timeDifference = currentTime - this.topRightQueue[0][1] - 1850;
+                    queue = this.topRightQueue;
                 }
-                timeDifference = currentTime - this.logic.topRightQueue[0][1] - 1850;
-                queue = this.topRightQueue;
-                element = "top-right";
+
+                if (this.topRightHoldQueue[0] != undefined) {
+                    timeDifference = currentTime - this.topRightHoldQueue[0][1] - 1850;
+                    holdQueue = this.topRightHoldQueue;
+                }
                 break;
             case 5:
-                if (this.logic.botRightQueue[0] === undefined) {
-                    break;
+                if (this.botRightQueue[0] != undefined) {
+                    timeDifference = currentTime - this.botRightQueue[0][1] - 1850;
+                    queue = this.botRightQueue;
                 }
-                timeDifference = currentTime - this.logic.botRightQueue[0][1] - 1850;
-                queue = this.botRightQueue;
-                element = "bottom-right";
+                if (this.botRightHoldQueue[0] != undefined) {
+                    timeDifference = currentTime - this.botHoldRightQueue[0][1] - 1850;
+                    holdQueue = this.botRightHoldQueue;
+                }
                 break;
         }
+        
     
-        if (queue != undefined && queue[0][2] != true) {
+        if (queue != undefined && queue[0][2] != true && held == false) {
             console.log(timeDifference);
             absoluteDifference = Math.abs(timeDifference);
             if (absoluteDifference < 40) {
@@ -276,7 +300,18 @@ class Logic {
             queue[0][0].style.opacity = "0";
             queue[0][2] = true;
         }
+
+        if (holdQueue != undefined && holdQueue[0][2] != true) {
+            //console.log(timeDifference);
+            absoluteDifference = Math.abs(timeDifference);
+            if (absoluteDifference < 20) {
+                console.log("PERFECT");
+                holdQueue[0][0].style.opacity = "0";
+                holdQueue[0][2] = true;
+            }
+        }
     }
+
 
     gameLoop() {
         
@@ -334,28 +369,26 @@ class Logic {
         }
         
         if (element != null && queue != null) {
-            const finalElement = element;
-            const finalQueue = queue;
-            finalElement.appendChild(arrow);
-            finalQueue.push([arrow, arrowTime]);
+            element.appendChild(arrow);
+            queue.push([arrow, arrowTime]);
 
             setTimeout(() => {
                 let date = new Date();
                 currentTime = date.getSeconds() * 1000 + date.getMilliseconds();
-                if (currentTime > arrowTime + 2000 && finalQueue[0][2] != true) {
+                if (currentTime > arrowTime + 2000 && queue[0][2] != true) {
                     console.log("MISS");
                 }
-                finalQueue.shift();
-                finalElement.removeChild(arrow);
+                queue.shift();
+                element.removeChild(arrow);
                 arrow = undefined;
-            }, 2200);
+            }, 2100);
         }
         setTimeout(()=> {
             arrow.style.transform = "translateY(-165vh)"
         }, 20);
     }
 
-    makeHoldArrow(position, hold) {
+    makeHoldArrow(position, holdLength) {
         let date = new Date();
         let arrowTime = date.getSeconds() * 1000 + date.getMilliseconds();
         let element;
@@ -363,10 +396,14 @@ class Logic {
         let currentTime;
 
         let arrowStart = document.createElement("img");
+        let arrowHold = document.createElement("img");
         let arrowEnd = document.createElement("img");
 
         arrowStart.style.top = "150vh"
         arrowStart.classList.add("moving");
+
+        arrowHold.style.top = "150vh";
+        arrowHold.classList.add("moving");
 
         arrowEnd.style.top = "150vh"
         arrowEnd.classList.add("moving");
@@ -375,57 +412,91 @@ class Logic {
             arrowStart.src = "./assets/botleft.png"
             arrowEnd.src = "./assets/botleft.png"
             element = document.getElementById("bottom-left");
-            queue = this.botLeftQueue;
+            queue = this.botLeftHoldQueue;
 
         } else if (position == 2) {
             arrowStart.src = "./assets/topleft.png"
             arrowEnd.src = "./assets/topleft.png"
             element = document.getElementById("top-left");
-            queue = this.topLeftQueue;
+            queue = this.topLeftHoldQueue;
 
         } else if (position == 3) {
             arrowStart.src = "./assets/middle.png"
             arrowEnd.src = "./assets/middle.png"
             element = document.getElementById("middle");
-            queue = this.middleQueue;
+            queue = this.middleHoldQueue;
 
         } else if (position == 4) {
             arrowStart.src = "./assets/topright.png"
             arrowEnd.src = "./assets/topright.png"
             element = document.getElementById("top-right");
-            queue = this.topRightQueue;
+            queue = this.topRightHoldQueue;
             
         } else if (position == 5) {
             arrowStart.src = "./assets/botright.png"
             arrowEnd.src = "./assets/botright.png"
             element = document.getElementById("bottom-right");
-            queue = this.botRightQueue;
+            queue = this.botRightHoldQueue;
         }
 
         if (element != null && queue != null) {
-            const finalElement = element;
-            const finalQueue = queue;
-            finalElement.appendChild(arrowStart);
-            finalElement.appendChild(arrowEnd);
-            finalQueue.push([arrowStart, arrowTime]);
+            element.appendChild(arrowStart);
+            element.appendChild(arrowHold);
+            element.appendChild(arrowEnd);
+
+            queue.push([arrowStart, arrowTime]);
 
             setTimeout(() => {
                 let date = new Date();
                 currentTime = date.getSeconds() * 1000 + date.getMilliseconds();
-                if (currentTime > arrowTime + 2000 && finalQueue[0][2] != true) {
+                if (currentTime > arrowTime + 2000 && queue[0][2] != true) {
                     console.log("MISS");
                 }
-                finalQueue.shift();
-                finalElement.removeChild(arrowStart);
+                queue.shift();
+                element.removeChild(arrowStart);
                 arrowStart = undefined;
-            }, 2200);
+            }, 2020);
+
+            for (let i = 1; i < holdLength; i++) {
+                let hold = document.createElement("img");
+                hold.style.top = arrowHold.style.top;
+                hold.classList.add("moving");
+                queue.push([hold, arrowTime + this.pieceDelay * i]);
+
+                setTimeout(() => {
+                    let date = new Date();
+                    currentTime = date.getSeconds() * 1000 + date.getMilliseconds();
+                    if (currentTime > arrowTime + this.pieceDelay * i + 2000 && queue[0][2] != true) {
+                        console.log("MISS");
+                    }
+                    queue.shift();
+                    arrowStart = undefined;
+                }, 2020 + this.pieceDelay  * i);
+            }
+
+            queue.push([arrowEnd, arrowTime + this.pieceDelay * holdLength]);
+
+            setTimeout(() => {
+
+                let date = new Date();
+                currentTime = date.getSeconds() * 1000 + date.getMilliseconds();
+                if (currentTime > arrowTime + this.pieceDelay * holdLength + 2000 && queue[0][2] != true) {
+                    console.log("MISS");
+                }
+                queue.shift();
+                element.removeChild(arrowEnd);
+                arrowStart = undefined;
+            }, 2020 + this.pieceDelay * holdLength);
         }
+
+        console.log(queue);
         setTimeout(()=> {
             arrowStart.style.transform = "translateY(-165vh)"
         }, 20);
+
         setTimeout(()=> {
             arrowEnd.style.transform = "translateY(-165vh)"
-        }, 520);
+        }, 20 + this.pieceDelay * holdLength);
     }
 }
 
@@ -470,11 +541,11 @@ var map3 = "1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0
 
 var map4 = "4 -1\n4 -1\n4 -1\n4 -1";
 
-var map5 = "1 3";
+var map5 = "1,2 10\n";
 
 const logic = new Logic();
 const controller = new Controller(logic);
-logic.setGame(map3, 240);
+logic.setGame(map5, 240);
 logic.startGame();
 
 /* TO DO LIST
