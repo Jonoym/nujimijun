@@ -476,3 +476,8 @@ const logic = new Logic();
 const controller = new Controller(logic);
 logic.setGame(map3, 240);
 logic.startGame();
+
+/* TO DO LIST
+1. Fix the hold system of the arrows.
+2. Add the score display to the centre of the screen
+3. Create buttons to start and load the game. */
