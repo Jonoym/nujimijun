@@ -321,12 +321,12 @@ class Logic {
             queue[0][2] = true;
         }
 
-        if (holdQueue != undefined && holdQueue[0][2] != true) {
+        if (holdQueue != undefined && holdQueue[0][4] != true) {
             absoluteDifference = Math.abs(timeDifference);
-            if (absoluteDifference < 30) {
+            if (absoluteDifference < 10) {
                 console.log("PERFECT");
                 holdQueue[0][0].style.opacity = "0";
-                holdQueue[0][2] = true;
+                holdQueue[0][4] = true;
             }
         }
     }
@@ -402,7 +402,7 @@ class Logic {
             }, 2100);
         }
         setTimeout(()=> {
-            arrow.style.transform = "translateY(-165vh)"
+            arrow.style.transform = "translateY(-330vh)"
         }, 20);
     }
 
@@ -419,43 +419,60 @@ class Logic {
 
         arrowStart.style.top = "150vh"
         arrowStart.classList.add("moving");
+        arrowStart.style.zIndex = "999";
 
         arrowHold.style.top = "150vh";
         arrowHold.classList.add("moving");
+        arrowHold.style.width = "60px";
 
         arrowEnd.style.top = "150vh"
         arrowEnd.classList.add("moving");
+        arrowEnd.style.zIndex = "999";
 
         if (position == 1) {
             arrowStart.src = "./assets/botleft.png"
+            arrowHold.src = "./assets/bot hold.png"
             arrowEnd.src = "./assets/botleft.png"
             element = document.getElementById("bottom-left");
             queue = this.botLeftHoldQueue;
 
         } else if (position == 2) {
             arrowStart.src = "./assets/topleft.png"
+            arrowHold.src = "./assets/top hold.png"
             arrowEnd.src = "./assets/topleft.png"
             element = document.getElementById("top-left");
             queue = this.topLeftHoldQueue;
 
         } else if (position == 3) {
             arrowStart.src = "./assets/middle.png"
+            arrowHold.src = "./assets/middle hold.png"
             arrowEnd.src = "./assets/middle.png"
             element = document.getElementById("middle");
             queue = this.middleHoldQueue;
 
         } else if (position == 4) {
             arrowStart.src = "./assets/topright.png"
+            arrowHold.src = "./assets/top hold.png"
             arrowEnd.src = "./assets/topright.png"
             element = document.getElementById("top-right");
             queue = this.topRightHoldQueue;
             
         } else if (position == 5) {
             arrowStart.src = "./assets/botright.png"
+            arrowHold.src = "./assets/bot hold.png"
             arrowEnd.src = "./assets/botright.png"
             element = document.getElementById("bottom-right");
             queue = this.botRightHoldQueue;
         }
+        let arrowHoldHeight;
+        if (holdLength < 6) {
+            arrowHoldHeight = holdLength * 150 + 6 * holdLength * holdLength;
+        } else {
+            arrowHoldHeight = holdLength * 147 + 5 * holdLength * holdLength;
+        }
+
+
+        arrowHold.style.height = arrowHoldHeight + "px";
 
         if (element != null && queue != null) {
             element.appendChild(arrowStart);
@@ -467,7 +484,7 @@ class Logic {
             setTimeout(() => {
                 let date = new Date();
                 currentTime = date.getSeconds() * 1000 + date.getMilliseconds();
-                if (currentTime > arrowTime + 2000 && queue[0][2] != true) {
+                if (currentTime > arrowTime + 2000 && queue[0][4] != true) {
                     console.log("MISS");
                 }
                 queue.shift();
@@ -479,12 +496,12 @@ class Logic {
                 let hold = document.createElement("img");
                 hold.style.top = arrowHold.style.top;
                 hold.classList.add("moving");
-                queue.push([hold, arrowTime + this.pieceDelay * i]);
+                queue.push([hold, arrowTime + this.pieceDelay * i, arrowHold, holdLength - i]);
 
                 setTimeout(() => {
                     let date = new Date();
                     currentTime = date.getSeconds() * 1000 + date.getMilliseconds();
-                    if (currentTime > arrowTime + this.pieceDelay * i + 2000 && queue[0][2] != true) {
+                    if (currentTime > arrowTime + this.pieceDelay * i + 2000 && queue[0][4] != true) {
                         console.log("MISS");
                     }
                     queue.shift();
@@ -497,22 +514,27 @@ class Logic {
             setTimeout(() => {
                 let date = new Date();
                 currentTime = date.getSeconds() * 1000 + date.getMilliseconds();
-                if (currentTime > arrowTime + this.pieceDelay * holdLength + 2000 && queue[0][2] != true) {
+                if (currentTime > arrowTime + this.pieceDelay * holdLength + 2000 && queue[0][4] != true) {
                     console.log("MISS");
                 }
                 queue.shift();
+                element.removeChild(arrowHold);
                 element.removeChild(arrowEnd);
                 arrowEnd = undefined;
             }, 2000 + this.pieceDelay * holdLength);
         }
 
         setTimeout(()=> {
-            arrowStart.style.transform = "translateY(-165vh)"
-        }, 0);
+            arrowStart.style.transform = "translateY(-330vh)"
+        }, 20);
 
         setTimeout(()=> {
-            arrowEnd.style.transform = "translateY(-165vh)"
-        }, 0 + this.pieceDelay * holdLength);
+            arrowHold.style.transform = "translateY(-330vh)"
+        }, 120);
+
+        setTimeout(()=> {
+            arrowEnd.style.transform = "translateY(-330vh)"
+        }, 20 + this.pieceDelay * holdLength);
     }
 }
 
@@ -557,8 +579,7 @@ var map3 = "1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0
 
 var map4 = "4 -1\n4 -1\n4 -1\n4 -1";
 
-var map5 = "1 10\n\n\n2 3";
-
+var map5 = "\n\n1 6\n3 1\n4 2"
 const logic = new Logic();
 const controller = new Controller(logic);
 logic.setGame(map5, 240);
