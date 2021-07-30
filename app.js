@@ -21,6 +21,8 @@ class Controller {
 
         document.addEventListener('keydown', this.handlePress.bind(this));
         document.addEventListener('keyup', this.handleRelease.bind(this));
+        document.getElementById("start").addEventListener('click', this.logic.startGame.bind(this.logic));
+        document.getElementById("load").addEventListener('click', this.logic.loadGame.bind(this.logic));
     }
 
     handlePress(event) {
@@ -202,6 +204,7 @@ class Logic {
 
     constructor() {
         this.timerID = null;
+        this.self = this;
 
         this.botLeftQueue = [];
         this.topLeftQueue = [];
@@ -215,14 +218,26 @@ class Logic {
         this.topRightHoldQueue = [];
         this.botRightHoldQueue = [];
 
+        this.track;
+        this.bpm;
         this.game;
         this.gameStart = false;
 
+        this.textBox = document.getElementById("pop-up");
+        this.arrowText = document.getElementById("arrow-text");
+        this.comboNumber = document.getElementById("combo-number");
+        this.comboText = document.getElementById("combo-text");
+        this.combo = 0;
     }
 
     setGame(track, bpm) {
-        this.game = new Game(track, bpm);
+        this.track = track;
+        this.bpm = bpm;
         this.pieceDelay = 60000/bpm;
+    }
+
+    loadGame() {
+        this.game = new Game(this.track, this.bpm);
     }
 
     getGame() {
@@ -306,25 +321,32 @@ class Logic {
         
     
         if (queue != undefined && queue[0][2] != true && held == false) {
-            console.log(timeDifference);
+            let displayText;
+            let colour;
             absoluteDifference = Math.abs(timeDifference);
             if (absoluteDifference < 40) {
-                console.log("PERFECT");
+                displayText = "PERFECT";
+                colour = "#aaaaff"
             } else if (absoluteDifference < 80) {
-                console.log("GOOD");
+                displayText = "GOOD";
+                colour = "#40e0d0";
             } else if (absoluteDifference < 120) {
-                console.log("OKAY");
+                displayText = "OKAY";
+                colour = "#ffb347";
             } else {
                 return;
             }
+            
+            this.combo++;
+            this.changeText(displayText, this.combo, colour);
             queue[0][0].style.opacity = "0";
             queue[0][2] = true;
         }
 
         if (holdQueue != undefined && holdQueue[0][4] != true) {
-            absoluteDifference = Math.abs(timeDifference);
-            if (absoluteDifference < 10) {
-                console.log("PERFECT");
+            if (timeDifference > -10 && timeDifference < 40) {
+                this.combo++;
+                this.changeText("PERFECT", this.combo, "#aaaaff");
                 holdQueue[0][0].style.opacity = "0";
                 holdQueue[0][4] = true;
             }
@@ -346,7 +368,27 @@ class Logic {
             }
         } else {
             clearInterval(this.timerID);
+            this.gameStart = false;
         }
+    }
+
+    changeText(text, combo, colour) {
+        console.log(text);
+        console.log(combo);
+        if (combo > 5) {
+            this.comboNumber.style.opacity = 1;
+            this.comboText.style.opacity = 1;
+        } else {
+            this.comboNumber.style.opacity = 0;
+            this.comboText.style.opacity = 0;
+        }
+        this.arrowText.style.color = colour;
+        this.arrowText.textContent = text;
+        this.comboNumber.textContent = combo;
+        this.textBox.classList.remove("appear");
+        this.textBox.offsetWidth;
+        this.textBox.classList.add("appear");
+
     }
 
     makeArrow(position) {
@@ -394,7 +436,8 @@ class Logic {
                 let date = new Date();
                 currentTime = date.getSeconds() * 1000 + date.getMilliseconds();
                 if (currentTime > arrowTime + 2000 && queue[0][2] != true) {
-                    console.log("MISS");
+                    this.combo = 0;
+                    this.changeText("MISS", this.combo, "#ff6961");
                 }
                 queue.shift();
                 element.removeChild(arrow);
@@ -403,7 +446,7 @@ class Logic {
         }
         setTimeout(()=> {
             arrow.style.transform = "translateY(-330vh)"
-        }, 20);
+        }, 15);
     }
 
     makeHoldArrow(position, holdLength) {
@@ -419,7 +462,7 @@ class Logic {
 
         arrowStart.style.top = "150vh"
         arrowStart.classList.add("moving");
-        arrowStart.style.zIndex = "999";
+        arrowStart.style.zIndex = "900";
 
         arrowHold.style.top = "150vh";
         arrowHold.classList.add("moving");
@@ -427,7 +470,7 @@ class Logic {
 
         arrowEnd.style.top = "150vh"
         arrowEnd.classList.add("moving");
-        arrowEnd.style.zIndex = "999";
+        arrowEnd.style.zIndex = "900";
 
         if (position == 1) {
             arrowStart.src = "./assets/botleft.png"
@@ -485,7 +528,8 @@ class Logic {
                 let date = new Date();
                 currentTime = date.getSeconds() * 1000 + date.getMilliseconds();
                 if (currentTime > arrowTime + 2000 && queue[0][4] != true) {
-                    console.log("MISS");
+                    this.combo = 0;
+                    this.changeText("MISS", this.combo, "#ff6961");
                 }
                 queue.shift();
                 element.removeChild(arrowStart);
@@ -502,7 +546,8 @@ class Logic {
                     let date = new Date();
                     currentTime = date.getSeconds() * 1000 + date.getMilliseconds();
                     if (currentTime > arrowTime + this.pieceDelay * i + 2000 && queue[0][4] != true) {
-                        console.log("MISS");
+                        this.combo = 0;
+                        this.changeText("MISS", this.combo, "#ff6961");
                     }
                     queue.shift();
                     hold = undefined;
@@ -515,7 +560,8 @@ class Logic {
                 let date = new Date();
                 currentTime = date.getSeconds() * 1000 + date.getMilliseconds();
                 if (currentTime > arrowTime + this.pieceDelay * holdLength + 2000 && queue[0][4] != true) {
-                    console.log("MISS");
+                    this.combo = 0;
+                    this.changeText("MISS", this.combo, "#ff6961");
                 }
                 queue.shift();
                 element.removeChild(arrowHold);
@@ -579,11 +625,11 @@ var map3 = "1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0
 
 var map4 = "4 -1\n4 -1\n4 -1\n4 -1";
 
-var map5 = "\n\n1 6\n3 1\n4 2"
+var map5 = "\n\n\n\n\n\n\n1 6\n3 1\n4 2"
 const logic = new Logic();
 const controller = new Controller(logic);
-logic.setGame(map5, 240);
-logic.startGame();
+logic.setGame(map3, 240);
+//logic.startGame();
 
 /* TO DO LIST
 1. Fix the hold system of the arrows.
