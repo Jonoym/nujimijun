@@ -1,0 +1,203 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend+Mega&display=swap');
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Lexend Mega', sans-serif;
+}
+
+.background {
+    width: 100%;
+    height: 100vh;
+    opacity: 0.2;
+    background: black;
+    position: absolute;
+
+    transition: all 0.5s ease;
+}
+
+.black {
+    background: black;
+    opacity: 1;
+}
+
+#game {
+    width: 100%;
+    height: 100vh;
+    background: white;
+
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    position: absolute;
+    overflow: hidden;
+}
+
+.container {
+    width: 430px;
+    position: absolute;
+}
+
+/* .healthbar {
+    position: relative;
+    height: 40px;
+    width: 100%;
+    background: grey;
+
+    margin-bottom: 10px;
+
+    border-radius: 10px;
+    border: 5px solid #333333;
+}
+
+.health {
+    height: 100%;
+    width: 0%;
+    background: green;
+    transition: all 0.3s ease;
+}
+
+.healthbar:hover .health {
+    width: 100%;
+} */
+
+#gameboard {
+    position: relative;
+    height: 98vh;
+    width: 100%;
+    background: rgb(0,0,0,0.4);
+
+    display: flex;
+}
+
+.arrow {
+    width: 80px;
+    height: 80px;
+    margin: 2px;
+    transition: all 0.1s ease;
+    box-shadow: none;
+    opacity: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.arrow img {
+    width: 80px;
+    height: 80px;
+    position: absolute;
+}
+
+.glow {
+    width: 45px;
+    height: 45px;
+    z-index: 0;
+}
+
+.white {
+    opacity: 0;
+    transition: all 0.2s ease;
+    z-index: 999;
+}
+
+#bottom-left {
+    margin-left: 5px;
+}
+
+.moving {
+    transition: transform 4s linear;
+    position: absolute;
+    bottom: 10px;
+}
+
+.default-arrow {
+    opacity: 0.5;
+}
+
+.hold-top {
+    top: 450px;
+}
+
+/* Game Menu */
+
+.menu {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu button {
+    width: 100px;
+    height: 40px;
+    position: relative;
+    font-weight: bold;
+    font-size: 1rem;
+    margin: 10px;
+    right: 300px;
+    background: #aaaaff;
+    border: none;
+    cursor: pointer;
+}
+
+#pop-up {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    z-index: 999;
+}
+
+.text {
+    position: relative;
+}
+
+#arrow-text {
+    color: #aaaaff;
+    font-size: 3rem;
+    text-shadow: 0px 0px 10px black;
+}
+
+#combo-text {
+    color: #aaaaaa;
+    text-shadow: 0px 0px 5px black;
+}
+
+#combo-number {
+    color: #dddddd;
+    font-size: 3rem;
+    text-shadow: 0px 0px 7px black;
+}
+
+.appear {
+    animation: appear 0.4s linear;
+}
+
+@keyframes appear {
+    0% {
+        opacity: 0.7;
+        transform: scale(0.9)    
+    }
+    20% {
+        transform: scale(0.95);
+        opacity: 1;
+    }
+
+    80% {
+        transform: scaleY(1);
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: scaleY(0.5) translateX(10vw);
+    }
+}
+
+@keyframes filler {
+
+}
