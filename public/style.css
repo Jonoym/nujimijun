@@ -23,7 +23,7 @@
 
 /* Styling for the loading and waiting screen. */
 
-#loadscreen, #menuscreen {
+#loadscreen, #menuscreen, #lobby {
     width: 100%;
     height: 100vh;
     z-index: 999;
@@ -87,6 +87,84 @@
     color: #40e0d0;
 }
 
+#lobby {
+    z-index: 0;
+    flex-direction: column;
+}
+
+.player {
+    width: 100%;
+    height: 100%;
+    color: white;
+    margin: 2vh;
+
+    background: rgba(116, 116, 233, 0.3);
+    border-radius: 5px;
+
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.player h1 {
+    font-size: 3rem;
+    margin: 10% 0;
+    
+}
+.player h3 {
+    font-size: 2rem;
+    margin: 5% 0;
+}
+
+
+.player .ready, .player .connected {
+    color : #aa2020;
+}
+
+.p1 .connected {
+    color: green;
+}
+
+#lobby .top-row, .bottom-row {
+    width: 75%;
+    margin: 2vh 2vh;
+
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+#lobby .top-row {
+    margin-top: 5vh;
+    height: 100%;
+}
+
+#lobby .bottom-row {
+    margin-bottom: 5vh;
+    height: 100%;
+}
+
+#lobby .back {
+    position: absolute;
+    top: 5vh;
+    left: 2%;
+    padding: 10px;
+    color: #9999ee;
+
+    font-size: 2rem;
+    border: none;
+    cursor: pointer;
+    background: none;
+    border: none;
+
+    transition: all 0.5s ease;
+}
+
+#lobby .back:hover {
+    color: #40e0d0;
+}
+
 #game {
     width: 100%;
     height: 100vh;
@@ -99,7 +177,7 @@
     overflow: hidden;
 }
 
-.container {
+#game .container {
     width: 430px;
     position: absolute;
 }

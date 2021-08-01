@@ -28,11 +28,13 @@ class Controller {
         this.loadButton = document.getElementById("load");
         this.singleButton = document.getElementById("single")
         this.multiButton = document.getElementById("multi")
+        this.lobbyBack = document.getElementById("lobby-back")
 
         this.startButton.addEventListener('click', this.logic.startGame.bind(this.logic));
         this.loadButton.addEventListener('click', this.logic.loadGame.bind(this.logic));
         this.singleButton.addEventListener('click', this.logic.startSingle.bind(this.logic));
         this.multiButton.addEventListener('click', this.logic.startMulti.bind(this.logic));
+        this.lobbyBack.addEventListener('click', this.logic.gameSelect.bind(this.logic));
     }
 
     handlePress(event) {
@@ -281,7 +283,19 @@ class Logic {
     }
 
     multiplayerGame() {
-        console.log("here");
+        this.gameStart = true;
+        this.timerID = setInterval(this.gameLoop.bind(this), this.pieceDelay);
+    }
+
+    startSingle() {
+        this.gameMode = 1;
+        this.clearMenu();
+    }
+
+    startMulti() {
+        this.gameMode = 2;
+        this.clearMenu();
+        this.displayLobby();
         const socket = io();
 
         socket.on('playerNumber', number => {
@@ -304,28 +318,39 @@ class Logic {
         })
     }
 
+    clearMenu() {
+        let menuScreen = document.getElementById("menuscreen");
+        menuScreen.style.opacity = 0;
+        setTimeout(() => {
+            menuScreen.style.zIndex = 0;
+        }, 1000);
+    }
+
+    displayLobby() {
+        let lobbyScreen = document.getElementById("lobby");
+        lobbyScreen.style.opacity = 1;
+        lobbyScreen.style.zIndex = 997;
+    }
+
+    gameSelect() {
+        let menuScreen = document.getElementById("menuscreen");
+        menuScreen.style.opacity = 1;
+        this.clearLobby();
+        menuScreen.style.zIndex = 999;
+    }
+
+    clearLobby() {
+        let lobbyScreen = document.getElementById("lobby");
+        lobbyScreen.style.opacity = 0;
+        lobbyScreen.style.zIndex = 0;
+    }
+
     getTrack() {
         return this.game.getTrack();
     }
 
     getFrame() {
         return this.game.getTrack().shift();
-    }
-
-    startSingle() {
-        this.gameMode = 1;
-        this.clearMenu();
-    }
-
-    startMulti() {
-        this.gameMode = 2;
-        this.clearMenu();
-    }
-
-    clearMenu() {
-        let menuScreen = document.getElementById("menuscreen");
-        menuScreen.style.opacity = 0;
-        menuScreen.style.zIndex = 0;
     }
 
     pressPiece(position, held) {
