@@ -16,7 +16,7 @@ server.listen(PORT, () => {
 });
 
 //Handle a socket connection request from web client
-const connections = [null, null];
+const connections = [null, null, null, null];
 io.on("connection", socket => {
     //console.log("New WS Connection");
 
