@@ -6,6 +6,8 @@ const FLASH = "white";
 class Controller {
     constructor(logic) {
 
+        this.loadingScreen = true;
+
         this.logic = logic;
         this.bottomLeft = false;
         this.topLeft = false;
@@ -48,6 +50,14 @@ class Controller {
         }
         if (event.keyCode === 99) {
             this.bottomRightPress();
+        }
+        if (this.loadingScreen === true) {
+            let loadingScreen = document.getElementById("loadscreen");
+            loadingScreen.style.opacity = 0;
+            setTimeout(() => {
+                loadingScreen.remove();
+            }, 1000);
+            this.loadingScreen = false;
         }
     }
 
@@ -304,10 +314,18 @@ class Logic {
 
     startSingle() {
         this.gameMode = 1;
+        this.clearMenu();
     }
 
     startMulti() {
         this.gameMode = 2;
+        this.clearMenu();
+    }
+
+    clearMenu() {
+        let menuScreen = document.getElementById("menuscreen");
+        menuScreen.style.opacity = 0;
+        menuScreen.style.zIndex = 0;
     }
 
     pressPiece(position, held) {
@@ -433,6 +451,7 @@ class Logic {
     }
 
     changeText(text, combo, colour) {
+        console.log(text);
         if (combo > 3) {
             this.comboNumber.style.opacity = 1;
             this.comboText.style.opacity = 1;
@@ -687,6 +706,10 @@ var map4 = "1,5 0\n3 0\n3 0\n2 0\n\n2 0\n3 0\n1 0\n3 0\n2 0\n4 0\n3 0\n5 0\n3 0\
 var map5 = "\n\n\n\n\n\n\n1 6\n3 1\n4 2\n"
 
 var map6 = "1,2 0\n1,2 0\n4,5 0\n3,4 0\n1,2 0\n1,2 0\n4,5 0\n3,4 0\n1,2 0\n1,2 0\n4,5 0\n3,4 0\n1,2 0\n1,2 0\n4,5 0\n3,4 0\n1,2 0\n1,2 0\n4,5 0\n3,4 0\n"
+
+var map7 = "1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n";
+
+var map8 = "1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n";
 const logic = new Logic();
 const controller = new Controller(logic);
-logic.setGame(map5, 360);
+logic.setGame(map8, 180);

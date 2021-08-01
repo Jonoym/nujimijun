@@ -21,6 +21,72 @@
     opacity: 1;
 }
 
+/* Styling for the loading and waiting screen. */
+
+#loadscreen, #menuscreen {
+    width: 100%;
+    height: 100vh;
+    z-index: 999;
+    background: black;
+
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+
+    transition: all 1s ease;
+}
+
+.waiting-text {
+    position: relative;
+    top: 30vh;
+    color: #aaaaff;
+    animation: wait 2s infinite ease;
+}
+
+@keyframes wait {
+    0% {
+        transform: translateY(0px);
+        text-shadow: 0px 0px 4px #aaaaff;
+    }
+    50% {
+        transform: translateY(10px);
+        text-shadow: 0px 0px 2px white;
+    }
+
+    100% {
+        transform: translateY(0px);
+        text-shadow: 0px 0px 4px #aaaaff;
+    }
+}
+
+#menuscreen {
+    z-index: 998;
+    justify-content: space-between;
+}
+
+#menuscreen button {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    color: #9999ee;
+    border: none;
+    font-size: 3rem;
+    text-shadow: 0px 0px 5px #333333;
+
+    background: rgb(255,255,255,0);
+    margin: auto;
+
+    transition: all 0.5s ease;
+    cursor: pointer;
+}
+
+#menuscreen button:hover {
+    background: rgb(255,255,255,0.1);
+    color: #40e0d0;
+}
+
 #game {
     width: 100%;
     height: 100vh;
@@ -196,8 +262,4 @@
         opacity: 0;
         transform: scaleY(0.5) translateX(10vw);
     }
-}
-
-@keyframes filler {
-
 }
