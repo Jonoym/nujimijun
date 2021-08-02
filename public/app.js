@@ -29,12 +29,16 @@ class Controller {
         this.singleButton = document.getElementById("single")
         this.multiButton = document.getElementById("multi")
         this.lobbyBack = document.getElementById("lobby-back")
+        this.nameBack = document.getElementById("name-back")
+        this.nameNext = document.getElementById("next")
 
         this.startButton.addEventListener('click', this.logic.startGame.bind(this.logic));
         this.loadButton.addEventListener('click', this.logic.loadGame.bind(this.logic));
         this.singleButton.addEventListener('click', this.logic.startSingle.bind(this.logic));
         this.multiButton.addEventListener('click', this.logic.startMulti.bind(this.logic));
-        this.lobbyBack.addEventListener('click', this.logic.gameSelect.bind(this.logic));
+        this.lobbyBack.addEventListener('click', this.logic.enterName.bind(this.logic));
+        this.nameBack.addEventListener('click', this.logic.gameSelect.bind(this.logic));
+        this.nameNext.addEventListener('click', this.logic.displayLobby.bind(this.logic));
     }
 
     handlePress(event) {
@@ -295,7 +299,7 @@ class Logic {
     startMulti() {
         this.gameMode = 2;
         this.clearMenu();
-        this.displayLobby();
+        this.enterName();
         const socket = io();
 
         socket.on('playerNumber', number => {
@@ -327,23 +331,43 @@ class Logic {
     }
 
     displayLobby() {
+        this.clearNameEnter();
         let lobbyScreen = document.getElementById("lobby");
         lobbyScreen.style.opacity = 1;
         lobbyScreen.style.zIndex = 997;
     }
 
+    enterName() {
+        this.clearLobby();
+        this.clearMenu();
+        let enterName = document.getElementById("enter-name");
+        enterName.style.opacity = 1;
+        enterName.style.zIndex = 997;
+    }
+
     gameSelect() {
+        this.clearNameEnter();
         let menuScreen = document.getElementById("menuscreen");
         menuScreen.style.opacity = 1;
-        this.clearLobby();
         menuScreen.style.zIndex = 999;
     }
 
     clearLobby() {
         let lobbyScreen = document.getElementById("lobby");
         lobbyScreen.style.opacity = 0;
-        lobbyScreen.style.zIndex = 0;
+        setTimeout(() => {
+            lobbyScreen.style.zIndex = 0;
+        }, 1000);
     }
+
+    clearNameEnter() {        
+        let nameEnter = document.getElementById("enter-name");
+        nameEnter.style.opacity = 0;
+        setTimeout(() => {
+            nameEnter.style.zIndex = 0;
+        }, 1000);
+    }
+
 
     getTrack() {
         return this.game.getTrack();
