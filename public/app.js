@@ -32,6 +32,12 @@ class Controller {
         this.nameBack = document.getElementById("name-back")
         this.nameNext = document.getElementById("next")
 
+        this.bottomLeftMask = document.getElementById("mask-bottom-left");
+        this.topLeftMask = document.getElementById("mask-top-left");
+        this.middleMask = document.getElementById("mask-middle");
+        this.topRightMask = document.getElementById("mask-top-right");
+        this.bottomRightMask = document.getElementById("mask-bottom-right");
+
         this.startButton.addEventListener('click', this.logic.startGame.bind(this.logic));
         this.loadButton.addEventListener('click', this.logic.loadGame.bind(this.logic));
         this.singleButton.addEventListener('click', this.logic.startSingle.bind(this.logic));
@@ -71,6 +77,7 @@ class Controller {
         const bottomLeft = document.getElementById("glow-bottom-left");
         const bottomLeftWhite = document.getElementById("bottom-left white");
         this.arrowFlash(bottomLeft, bottomLeftWhite, BOTTOM);
+        this.bottomLeftMask.classList.remove("move-up")
 
         if (this.bottomLeft === false) {
             this.bottomLeft = true;
@@ -86,6 +93,7 @@ class Controller {
         const topLeft = document.getElementById("glow-top-left");
         const topLeftWhite = document.getElementById("top-left white");
         this.arrowFlash(topLeft, topLeftWhite, TOP);
+        this.topLeftMask.classList.remove("move-up")
 
         if (this.topLeft === false) {
             this.topLeft = true;
@@ -101,6 +109,7 @@ class Controller {
         const middle = document.getElementById("glow-middle");
         const middleWhite = document.getElementById("middle white");
         this.arrowFlash(middle, middleWhite, MIDDLE);
+        this.middleMask.classList.remove("move-up")
 
         if (this.middle === false) {
             this.middle = true;
@@ -116,6 +125,7 @@ class Controller {
         const topRight = document.getElementById("glow-top-right");
         const topRightWhite = document.getElementById("top-right white");
         this.arrowFlash(topRight, topRightWhite, TOP);
+        this.topRightMask.classList.remove("move-up")
 
         if (this.topRight === false) {
             this.topRight = true;
@@ -131,6 +141,7 @@ class Controller {
         const bottomRight = document.getElementById("glow-bottom-right");
         const bottomRightWhite = document.getElementById("bottom-right white");
         this.arrowFlash(bottomRight, bottomRightWhite, BOTTOM);
+        this.bottomRightMask.classList.remove("move-up")
 
         if (this.bottomRight === false) {
             this.bottomLeft = true;
@@ -145,6 +156,7 @@ class Controller {
     arrowFlash(position, white, colour) {
         position.style.boxShadow = "0px 0px 100px " + colour;
         white.style.opacity = "1";
+        white.style.zIndex = "999";
         const background = document.getElementById("wallpaper");
         background.style.opacity = "0.65";
         background.style.transform = "scale(1.01)";
@@ -173,6 +185,8 @@ class Controller {
         this.bottomLeft = false;
         const bottomLeft = document.getElementById("glow-bottom-left");
         const bottomLeftWhite = document.getElementById("bottom-left white");
+        this.bottomLeftMask.offsetWidth;
+        this.bottomLeftMask.classList.add("move-up");
     
         this.arrowRelease(bottomLeft, bottomLeftWhite);
     }
@@ -182,6 +196,8 @@ class Controller {
         this.topLeft = false;
         const topLeft = document.getElementById("glow-top-left");
         const topLeftWhite = document.getElementById("top-left white");
+        this.topLeftMask.offsetWidth;
+        this.topLeftMask.classList.add("move-up");
     
         this.arrowRelease(topLeft, topLeftWhite);
     }
@@ -191,6 +207,8 @@ class Controller {
         this.middle = false;
         const middle = document.getElementById("glow-middle");
         const middleWhite = document.getElementById("middle white");
+        this.middleMask.offsetWidth;
+        this.middleMask.classList.add("move-up");
     
         this.arrowRelease(middle, middleWhite);
     }
@@ -200,6 +218,8 @@ class Controller {
         this.topRight = false;
         const topRight = document.getElementById("glow-top-right");
         const topRightWhite = document.getElementById("top-right white");
+        this.topRightMask.offsetWidth;
+        this.topRightMask.classList.add("move-up");
     
         this.arrowRelease(topRight, topRightWhite);
     }
@@ -209,6 +229,8 @@ class Controller {
         this.bottomLeft = false;
         const bottomRight = document.getElementById("glow-bottom-right");
         const bottomRightWhite = document.getElementById("bottom-right white");
+        this.bottomRightMask.offsetWidth;
+        this.bottomRightMask.classList.add("move-up");
     
         this.arrowRelease(bottomRight, bottomRightWhite);
     }
@@ -588,15 +610,16 @@ class Logic {
 
         arrowStart.style.top = "150vh"
         arrowStart.classList.add("moving");
-        arrowStart.style.zIndex = "900";
+        arrowStart.style.zIndex = "999";
 
         arrowHold.style.top = "150vh";
         arrowHold.classList.add("moving");
         arrowHold.style.width = "60px";
+        arrowHold.style.zIndex = "950";
 
         arrowEnd.style.top = "150vh"
         arrowEnd.classList.add("moving");
-        arrowEnd.style.zIndex = "900";
+        arrowEnd.style.zIndex = "999";
 
         if (position == 1) {
             arrowStart.src = "./assets/botleft.png"
@@ -761,4 +784,4 @@ var map7 = "1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0
 var map8 = "1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n";
 const logic = new Logic();
 const controller = new Controller(logic);
-logic.setGame(map8, 180);
+logic.setGame(map5, 240);
