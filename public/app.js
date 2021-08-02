@@ -31,6 +31,8 @@ class Controller {
         this.lobbyBack = document.getElementById("lobby-back")
         this.nameBack = document.getElementById("name-back")
         this.nameNext = document.getElementById("next")
+        this.readyButton = document.getElementById("p1")
+        
 
         this.bottomLeftMask = document.getElementById("mask-bottom-left");
         this.topLeftMask = document.getElementById("mask-top-left");
@@ -45,6 +47,7 @@ class Controller {
         this.lobbyBack.addEventListener('click', this.logic.enterName.bind(this.logic));
         this.nameBack.addEventListener('click', this.logic.gameSelect.bind(this.logic));
         this.nameNext.addEventListener('click', this.logic.displayLobby.bind(this.logic));
+        this.readyButton.addEventListener('click', this.logic.callMultiReady.bind(this.logic));
     }
 
     handlePress(event) {
@@ -253,6 +256,8 @@ class Logic {
         this.gameMode = 0;
         this.playerNum = 0;
         this.ready = false;
+        this.socket;
+        this.playersReady = [false, false];
 
         this.timerID = null;
         this.self = this;
@@ -322,9 +327,9 @@ class Logic {
         this.gameMode = 2;
         this.clearMenu();
         this.enterName();
-        const socket = io();
+        this.socket = io();
 
-        socket.on('playerNumber', number => {
+        this.socket.on('playerNumber', number => {
             if (number === -1) {
                 console.log("Server is full");
             } else {
@@ -333,15 +338,49 @@ class Logic {
             }
         })
 
-        socket.on("playerConnection", number => {
+        this.socket.on("playerConnection", number => {
             console.log(`Player ${number} has connected or disconnected`);
-            let player = `.p${parseInt(number) + 1}`;
-            document.querySelector(`${player} .connected span`).classList.toggle("green");
-            //Bolds the player number of the person connecting.
-            if (parseInt(number) === playerNumber) {
-                document.querySelector(player).style.fontWeight = bold;
+            this.playerConnectOrDisconnect(number);
+        });
+
+        this.socket.on("enemy-ready", number => {
+            this.playersReady[number] = true;
+            this.playerReady(number);
+            if (this.ready) {
+                this.multiReady(this.socket);
             }
         })
+    }
+    
+    callMultiReady() {
+        this.multiReady(this.socket);
+    }
+
+    multiReady(socket) {
+        console.log("FUCKER");
+        this.ready = !this.ready;
+        if (this.ready) {
+            socket.emit('player-ready');
+            this.playerReady(this.playerNum);
+        }
+    }
+
+    playerReady(number) {
+        let player = `p${parseInt(number) + 1}`;
+        console.log(player);
+        document.getElementById(player + "-ready").style.color = "rgb(3, 153, 3)";
+    }
+
+    playerConnectOrDisconnect(number) {
+        let player = `p${parseInt(number) + 1}`;
+        console.log(player);
+        document.getElementById(player + "-connected").style.color = "rgb(3, 153, 3)";
+        console.log(parseInt(number));
+        console.log(this.playerNum);
+        //Bolds the player number of the person connecting.
+        if (parseInt(number) == this.playerNum) {
+            document.getElementById(player + "-name").style.color = "green";
+        }
     }
 
     clearMenu() {
@@ -784,4 +823,4 @@ var map7 = "1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0
 var map8 = "1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n";
 const logic = new Logic();
 const controller = new Controller(logic);
-logic.setGame(map5, 240);
+logic.setGame(map3, 240);

@@ -187,11 +187,15 @@
 }
 
 .ready {
-    color: red;
+    color: rgb(135, 21, 21);
 }
 
-.connected {
-    color: green;
+#p1-connected {
+    color: rgb(3, 153, 3);
+}
+
+#p2-connected {
+    color: rgb(135, 21, 21);
 }
 
 .back {
@@ -295,7 +299,7 @@
 
 .white {
     opacity: 0;
-    transition: all 0.2s ease;
+    transition: all 0.1s ease;
     z-index: 970;
 }
 
@@ -304,12 +308,12 @@
     top: -15px;
     width: 80px;
     height: 65px;
-    background: rgb(11, 23, 41);
+    background: rgb(17, 32, 55);
     z-index: 960;
 }
 
 .move-up {
-    animation: mask 6s linear forwards;
+    animation: mask 8s linear forwards;
 }
 
 @keyframes mask {
