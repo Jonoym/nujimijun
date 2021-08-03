@@ -41,10 +41,10 @@ class Controller {
         this.startButton.addEventListener('click', this.logic.startGame.bind(this.logic));
         this.loadButton.addEventListener('click', this.logic.loadGame.bind(this.logic));
         this.singleButton.addEventListener('click', this.logic.startSingle.bind(this.logic));
-        this.multiButton.addEventListener('click', this.logic.startMulti.bind(this.logic));
+        this.multiButton.addEventListener('click', this.logic.enterName.bind(this.logic));
         this.lobbyBack.addEventListener('click', this.logic.enterName.bind(this.logic));
         this.nameBack.addEventListener('click', this.logic.gameSelect.bind(this.logic));
-        this.nameNext.addEventListener('click', this.logic.displayLobby.bind(this.logic));
+        this.nameNext.addEventListener('click', this.logic.startMulti.bind(this.logic));
     }
 
     handlePress(event) {
@@ -254,7 +254,7 @@ class Logic {
         this.playerNum = 0;
         this.ready = false;
         this.socket;
-        this.playersReady = [false, false];
+        this.playersReady = [false, false, false, false];
 
         this.timerID = null;
         this.self = this;
@@ -322,9 +322,11 @@ class Logic {
 
     startMulti() {
         this.gameMode = 2;
-        this.clearMenu();
-        this.enterName();
+        this.displayLobby();
         this.socket = io();
+
+        let name = document.getElementById("name-input").value;
+        console.log(name);
 
         this.socket.on('playerNumber', number => {
             if (number === -1) {
@@ -333,7 +335,14 @@ class Logic {
                 this.playerNum = parseInt(number);
                 let player = `p${parseInt(number) + 1}`;
                 document.getElementById(player).classList.add("current-player");
-                this.bindReady(player);
+                document.getElementById(player + "-name").textContent = name;
+                document.getElementById(player + "-connected").style.color = "rgb(3, 153, 3)";
+                document.getElementById(player + "-click-ready").style.opacity = "1";
+                document.getElementById(player).addEventListener('click', this.callMultiReady.bind(this));
+
+                console.log("here");
+                this.socket.emit("player-name", this.playerNum, name);
+
             }
         })
 
@@ -342,18 +351,24 @@ class Logic {
             this.playerConnectOrDisconnect(number);
         });
 
+        this.socket.on("playerDisconnect", number => {
+            console.log(`Player ${number} has connected or disconnected`);
+            this.playerDisconnect(number);
+        });
+
         this.socket.on("enemy-ready", number => {
             this.playersReady[number] = true;
             this.playerReady(number);
-            if (this.ready) {
-                this.multiReady(this.socket);
-            }
         })
-    }
 
-    bindReady(playerNumber) {
-        const readyButton = document.getElementById(playerNumber);
-        readyButton.addEventListener('click', this.callMultiReady.bind(this));
+        this.socket.on("enemy-unready", number => {
+            this.playersReady[number] = false;
+            this.playerUnready(number);
+        })
+
+        this.socket.on("player-name", (number, name) => {
+            this.playerName(number, name);
+        })
     }
     
     callMultiReady() {
@@ -361,30 +376,49 @@ class Logic {
     }
 
     multiReady(socket) {
-        console.log("FUCKER");
         this.ready = !this.ready;
         if (this.ready) {
-            socket.emit('player-ready');
+            socket.emit("player-ready");
             this.playerReady(this.playerNum);
+        } else {
+            socket.emit("player-unready");
+            this.playerUnready(this.playerNum);
         }
     }
 
     playerReady(number) {
         let player = `p${parseInt(number) + 1}`;
-        console.log(player);
         document.getElementById(player + "-ready").style.color = "rgb(3, 153, 3)";
+        document.getElementById(player + "-click-ready").style.opacity = "0";
+    }
+
+    playerName(number, name) {
+        let player = `p${parseInt(number) + 1}`;
+        document.getElementById(player + "-name").textContent = name;
+    }
+
+    playerUnready(number) {
+        let player = `p${parseInt(number) + 1}`;
+        document.getElementById(player + "-ready").style.color = "rgb(135, 21, 21)";
+        if (number === this.playerNum) {
+            document.getElementById(player + "-click-ready").style.opacity = "1";
+        }
     }
 
     playerConnectOrDisconnect(number) {
         let player = `p${parseInt(number) + 1}`;
-        console.log(player);
         document.getElementById(player + "-connected").style.color = "rgb(3, 153, 3)";
-        console.log(parseInt(number));
-        console.log(this.playerNum);
         //Bolds the player number of the person connecting.
         if (parseInt(number) == this.playerNum) {
-            document.getElementById(player + "-name").style.color = "green";
+            document.getElementById(player + "-name").style.color = "rgb(3, 153, 3)";
         }
+    }
+
+    playerDisconnect(number) {
+        let player = `p${parseInt(number) + 1}`;
+        document.getElementById(player + "-connected").style.color = "rgb(135, 21, 21)";
+        document.getElementById(player + "-ready").style.color = "rgb(135, 21, 21)";
+        document.getElementById(player + "-name").textContent = "PLAYER " + (parseInt(number) + 1);
     }
 
     clearMenu() {

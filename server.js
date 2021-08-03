@@ -17,8 +17,8 @@ server.listen(PORT, () => {
 
 //Handle a socket connection request from web client
 const connections = [null, null, null, null];
+const names = [null, null, null, null];
 io.on("connection", socket => {
-    //console.log("New WS Connection");
 
     //Finding an available player number
     let playerIndex = -1;
@@ -36,19 +36,43 @@ io.on("connection", socket => {
     } else {
         connections[playerIndex] = false;
     }
+
+    for(const i in connections) {
+        if (connections[i] != null && i != playerIndex) {
+            socket.emit("player-name", i, names[i]);
+            socket.emit("playerConnection", i);
+        }
+        if (connections[i] == true) {
+            console.log(i);
+            socket.emit("enemy-ready", i);
+        }
+    }
+
     socket.broadcast.emit("playerConnection", playerIndex);
 
     //Handling player disconnects
     socket.on("disconnect", () => {
         console.log(`Player ${playerIndex} disconnected.`);
         connections[playerIndex] = null;
-        socket.broadcast.emit("playerConnection", playerIndex)
+        names[playerIndex] = null;
+        socket.broadcast.emit("playerDisconnect", playerIndex)
     })
+
+    //Handling Player Names
+    socket.on("player-name", (number, name) => {
+        names[number] = name;
+        socket.broadcast.emit("player-name", number, name);
+    });
 
     //Ready
     socket.on("player-ready", () => {
         socket.broadcast.emit("enemy-ready", playerIndex);
         connections[playerIndex] = true;
+    })
+
+    socket.on("player-unready", () => {
+        socket.broadcast.emit("enemy-unready", playerIndex);
+        connections[playerIndex] = false;
     })
 
 });

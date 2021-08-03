@@ -180,6 +180,7 @@
     color: #555555;
     font-size: 2rem;
     left: 50%;
+    opacity: 0;
 
     transition: all 0.5s ease;
 }
@@ -191,18 +192,13 @@
 .player h1 {
     color: #9999ee;
     font-size: 2rem;
+    transition: all 0.5s ease;
 }
 
-#p1-connected {
-    color: rgb(3, 153, 3);
-}
-
-#p2-connected, #p3-connected, #p4-connected {
+#p2-connected, #p3-connected, #p4-connected,
+#p1-ready, #p2-ready, #p3-ready, #p4-ready, #p1-connected {
     color: rgb(135, 21, 21);
-}
-
-#p1-ready, #p2-ready, #p3-ready, #p4-ready {
-    color:rgb(135, 21, 21);
+    transition: all 0.5s ease;
 }
 
 .current-player {
