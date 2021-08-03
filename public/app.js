@@ -31,8 +31,6 @@ class Controller {
         this.lobbyBack = document.getElementById("lobby-back")
         this.nameBack = document.getElementById("name-back")
         this.nameNext = document.getElementById("next")
-        this.readyButton = document.getElementById("p1")
-        
 
         this.bottomLeftMask = document.getElementById("mask-bottom-left");
         this.topLeftMask = document.getElementById("mask-top-left");
@@ -47,7 +45,6 @@ class Controller {
         this.lobbyBack.addEventListener('click', this.logic.enterName.bind(this.logic));
         this.nameBack.addEventListener('click', this.logic.gameSelect.bind(this.logic));
         this.nameNext.addEventListener('click', this.logic.displayLobby.bind(this.logic));
-        this.readyButton.addEventListener('click', this.logic.callMultiReady.bind(this.logic));
     }
 
     handlePress(event) {
@@ -334,7 +331,9 @@ class Logic {
                 console.log("Server is full");
             } else {
                 this.playerNum = parseInt(number);
-                console.log(this.playerNum);
+                let player = `p${parseInt(number) + 1}`;
+                document.getElementById(player).classList.add("current-player");
+                this.bindReady(player);
             }
         })
 
@@ -350,6 +349,11 @@ class Logic {
                 this.multiReady(this.socket);
             }
         })
+    }
+
+    bindReady(playerNumber) {
+        const readyButton = document.getElementById(playerNumber);
+        readyButton.addEventListener('click', this.callMultiReady.bind(this));
     }
     
     callMultiReady() {
