@@ -44,7 +44,7 @@ class Controller {
         this.multiButton.addEventListener('click', this.logic.enterName.bind(this.logic));
         this.lobbyBack.addEventListener('click', this.logic.enterName.bind(this.logic));
         this.nameBack.addEventListener('click', this.logic.gameSelect.bind(this.logic));
-        this.nameNext.addEventListener('click', this.logic.startMulti.bind(this.logic));
+        this.nameNext.addEventListener('click', this.logic.displayLobby.bind(this.logic));
     }
 
     handlePress(event) {
@@ -251,10 +251,11 @@ class Logic {
     constructor() {
 
         this.gameMode = 0;
-        this.playerNum = 0;
+        this.playerNum;
         this.ready = false;
         this.socket;
         this.playersReady = [false, false, false, false];
+        this.callMultiReady;
 
         this.timerID = null;
         this.self = this;
@@ -322,33 +323,21 @@ class Logic {
 
     startMulti() {
         this.gameMode = 2;
-        this.displayLobby();
         this.socket = io();
 
         let name = document.getElementById("name-input").value;
-        console.log(name);
 
         this.socket.on('playerNumber', number => {
             if (number === -1) {
                 console.log("Server is full");
             } else {
-                this.playerNum = parseInt(number);
-                let player = `p${parseInt(number) + 1}`;
-                document.getElementById(player).classList.add("current-player");
-                document.getElementById(player + "-name").textContent = name;
-                document.getElementById(player + "-connected").style.color = "rgb(3, 153, 3)";
-                document.getElementById(player + "-click-ready").style.opacity = "1";
-                document.getElementById(player).addEventListener('click', this.callMultiReady.bind(this));
-
-                console.log("here");
-                this.socket.emit("player-name", this.playerNum, name);
-
+                this.currentPlayer(number, name);
             }
         })
 
         this.socket.on("playerConnection", number => {
             console.log(`Player ${number} has connected or disconnected`);
-            this.playerConnectOrDisconnect(number);
+            this.playerConnect(number);
         });
 
         this.socket.on("playerDisconnect", number => {
@@ -370,6 +359,21 @@ class Logic {
             this.playerName(number, name);
         })
     }
+
+    currentPlayer(number, name) {
+        console.log("called");
+        this.callMultiReady = () => {
+            this.multiReady(this.socket);
+        };
+        let player = `p${parseInt(number) + 1}`;
+        this.playerNum = parseInt(number);
+        document.getElementById(player).classList.add("current-player");
+        document.getElementById(player + "-name").textContent = name;
+        document.getElementById(player + "-connected").style.color = "rgb(3, 153, 3)";
+        document.getElementById(player + "-click-ready").style.opacity = "1";
+        document.getElementById(player).addEventListener('click', this.callMultiReady);
+        this.socket.emit("player-name", this.playerNum, name);
+    }
     
     callMultiReady() {
         this.multiReady(this.socket);
@@ -377,6 +381,7 @@ class Logic {
 
     multiReady(socket) {
         this.ready = !this.ready;
+        console.log(this.playerNum);
         if (this.ready) {
             socket.emit("player-ready");
             this.playerReady(this.playerNum);
@@ -405,7 +410,7 @@ class Logic {
         }
     }
 
-    playerConnectOrDisconnect(number) {
+    playerConnect(number) {
         let player = `p${parseInt(number) + 1}`;
         document.getElementById(player + "-connected").style.color = "rgb(3, 153, 3)";
         //Bolds the player number of the person connecting.
@@ -430,6 +435,12 @@ class Logic {
     }
 
     displayLobby() {
+        if (this.socket == undefined) {
+            this.startMulti();
+        } else {
+            console.log("here123");
+            this.socket.emit("getNumber");
+        }
         this.clearNameEnter();
         let lobbyScreen = document.getElementById("lobby");
         lobbyScreen.style.opacity = 1;
@@ -442,6 +453,20 @@ class Logic {
         let enterName = document.getElementById("enter-name");
         enterName.style.opacity = 1;
         enterName.style.zIndex = 997;
+        console.log(this.playerNum);
+        if (this.playerNum != undefined) {
+            this.leaveLobby();
+        }
+        this.playerNum = null;
+    }
+
+    leaveLobby() {
+        this.playerDisconnect(this.playerNum);
+        let player = `p${this.playerNum + 1}`;
+        document.getElementById(player).removeEventListener('click', this.callMultiReady);
+        document.getElementById(player).classList.remove("current-player");
+        this.ready = false;
+        this.socket.emit("leaveLobby", this.playerNum); 
     }
 
     gameSelect() {

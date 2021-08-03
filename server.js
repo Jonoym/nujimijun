@@ -43,10 +43,22 @@ io.on("connection", socket => {
             socket.emit("playerConnection", i);
         }
         if (connections[i] == true) {
-            console.log(i);
             socket.emit("enemy-ready", i);
         }
     }
+
+    socket.on("getNumber", () => {
+        console.log("here2");
+        let playerIndex = -1;
+        for (const i in connections) {
+            if (connections[i] === null) {
+                playerIndex = i;
+                break;
+            }
+        }
+        console.log(playerIndex);
+        socket.emit("playerNumber", playerIndex);
+    })
 
     socket.broadcast.emit("playerConnection", playerIndex);
 
@@ -58,14 +70,23 @@ io.on("connection", socket => {
         socket.broadcast.emit("playerDisconnect", playerIndex)
     })
 
+    socket.on("leaveLobby", (playerNum) => {
+        console.log(`Player ${playerNum} disconnected.`);
+        connections[playerNum] = null;
+        names[playerNum] = null;
+        socket.broadcast.emit("playerDisconnect", playerNum);
+    })
+
     //Handling Player Names
     socket.on("player-name", (number, name) => {
         names[number] = name;
         socket.broadcast.emit("player-name", number, name);
+        socket.broadcast.emit("playerConnection", number);
     });
 
     //Ready
     socket.on("player-ready", () => {
+        console.log("here");
         socket.broadcast.emit("enemy-ready", playerIndex);
         connections[playerIndex] = true;
     })
