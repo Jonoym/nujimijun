@@ -249,29 +249,6 @@
     position: absolute;
 }
 
-/* .healthbar {
-    position: relative;
-    height: 40px;
-    width: 100%;
-    background: grey;
-
-    margin-bottom: 10px;
-
-    border-radius: 10px;
-    border: 5px solid #333333;
-}
-
-.health {
-    height: 100%;
-    width: 0%;
-    background: green;
-    transition: all 0.3s ease;
-}
-
-.healthbar:hover .health {
-    width: 100%;
-} */
-
 #gameboard {
     position: absolute;
     top: -40vh;

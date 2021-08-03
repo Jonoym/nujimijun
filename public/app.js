@@ -282,6 +282,7 @@ class Logic {
         this.comboNumber = document.getElementById("combo-number");
         this.comboText = document.getElementById("combo-text");
         this.combo = 0;
+        this.score = 0;
     }
 
     setGame(track, bpm) {
@@ -590,6 +591,7 @@ class Logic {
             
             this.combo++;
             this.changeText(displayText, this.combo, colour);
+            this.addScore(displayText);
             queue[0][0].style.opacity = "0";
             queue[0][2] = true;
         }
@@ -598,6 +600,7 @@ class Logic {
             if (timeDifference > -10 && timeDifference < 40) {
                 this.combo++;
                 this.changeText("PERFECT", this.combo, "#aaaaff");
+                this.addScore("PERFECT");
                 holdQueue[0][0].style.opacity = "0";
                 holdQueue[0][4] = true;
             }
@@ -621,6 +624,18 @@ class Logic {
             clearInterval(this.timerID);
             this.gameStart = false;
         }
+    }
+
+    addScore(text) {
+        let multiplier = this.combo/100 + 1;
+        if (text == "PERFECT") {
+            this.score += 1000 * multiplier;
+        } else if (text == "GOOD") {
+            this.score += 700 * multiplier;
+        } else if (text == "OKAY") {
+            this.score += 300 * multiplier;
+        }
+        console.log(this.score);
     }
 
     changeText(text, combo, colour) {
@@ -688,6 +703,7 @@ class Logic {
                 if (currentTime > arrowTime + 2000 && queue[0][2] != true) {
                     this.combo = 0;
                     this.changeText("MISS", this.combo, "#ff6961");
+                    this.addScore("MISS");
                 }
                 queue.shift();
                 element.removeChild(arrow);
