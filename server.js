@@ -39,11 +39,11 @@ io.on("connection", socket => {
 
     for(const i in connections) {
         if (connections[i] != null && i != playerIndex) {
-            socket.emit("player-name", i, names[i]);
+            socket.emit("playerName", i, names[i]);
             socket.emit("playerConnection", i);
         }
         if (connections[i] == true) {
-            socket.emit("enemy-ready", i);
+            socket.emit("enemyReady", i);
         }
     }
 
@@ -78,21 +78,20 @@ io.on("connection", socket => {
     })
 
     //Handling Player Names
-    socket.on("player-name", (number, name) => {
+    socket.on("playerName", (number, name) => {
         names[number] = name;
-        socket.broadcast.emit("player-name", number, name);
+        socket.broadcast.emit("playerName", number, name);
         socket.broadcast.emit("playerConnection", number);
     });
 
     //Ready
-    socket.on("player-ready", () => {
-        console.log("here");
-        socket.broadcast.emit("enemy-ready", playerIndex);
+    socket.on("playerReady", () => {
+        socket.broadcast.emit("enemyReady", playerIndex);
         connections[playerIndex] = true;
     })
 
-    socket.on("player-unready", () => {
-        socket.broadcast.emit("enemy-unready", playerIndex);
+    socket.on("playerUnready", () => {
+        socket.broadcast.emit("enemyUnready", playerIndex);
         connections[playerIndex] = false;
     })
 

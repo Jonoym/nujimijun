@@ -3,50 +3,53 @@ const TOP = "red";
 const MIDDLE = "yellow";
 const FLASH = "white";
 
+
 class Controller {
+
     constructor(logic) {
 
         this.loadingScreen = true;
-
         this.logic = logic;
+
+         /** Checks for the first time the button is pressed if it is held down */
         this.bottomLeft = false;
         this.topLeft = false;
         this.middle = false;
         this.topRight = false;
         this.bottomRight = false;
 
+        /** Timers for each arrow position to simulate the hold without delays */
         this.botLeftTimer;
         this.topLeftTimer;
         this.middleTimer;
         this.topRightTimer;
         this.botRightTimer;
 
+        /** Creates the key press event detection */
         document.addEventListener('keydown', this.handlePress.bind(this));
         document.addEventListener('keyup', this.handleRelease.bind(this));
 
-        this.startButton = document.getElementById("start");
-        this.loadButton = document.getElementById("load");
-        this.singleButton = document.getElementById("single")
-        this.multiButton = document.getElementById("multi")
-        this.lobbyBack = document.getElementById("lobby-back")
-        this.nameBack = document.getElementById("name-back")
-        this.nameNext = document.getElementById("next")
-
+        /** Instantiates the elements for the masks to hide the hold columns */
         this.bottomLeftMask = document.getElementById("mask-bottom-left");
         this.topLeftMask = document.getElementById("mask-top-left");
         this.middleMask = document.getElementById("mask-middle");
         this.topRightMask = document.getElementById("mask-top-right");
         this.bottomRightMask = document.getElementById("mask-bottom-right");
 
-        this.startButton.addEventListener('click', this.logic.startGame.bind(this.logic));
-        this.loadButton.addEventListener('click', this.logic.loadGame.bind(this.logic));
-        this.singleButton.addEventListener('click', this.logic.startSingle.bind(this.logic));
-        this.multiButton.addEventListener('click', this.logic.enterName.bind(this.logic));
-        this.lobbyBack.addEventListener('click', this.logic.enterName.bind(this.logic));
-        this.nameBack.addEventListener('click', this.logic.gameSelect.bind(this.logic));
-        this.nameNext.addEventListener('click', this.logic.displayLobby.bind(this.logic));
+        /** Instantiates the elements for all the buttons to change screens */
+        document.getElementById("start").addEventListener('click', this.logic.startGame.bind(this.logic));
+        document.getElementById("single").addEventListener('click', this.logic.startSingle.bind(this.logic));
+        document.getElementById("multi").addEventListener('click', this.logic.enterName.bind(this.logic));
+        document.getElementById("lobby-back").addEventListener('click', this.logic.enterName.bind(this.logic));
+        document.getElementById("name-back").addEventListener('click', this.logic.gameSelect.bind(this.logic));
+        document.getElementById("next").addEventListener('click', this.logic.displayLobby.bind(this.logic));
     }
 
+    /**
+     * Handles the button press event depending on the button that has been pressed.
+     * 
+     * @param {*} event the key code of the key pressed
+     */
     handlePress(event) {
         if (event.keyCode === 97) {
             this.bottomLeftPress();
@@ -73,6 +76,7 @@ class Controller {
         }
     }
 
+    /** Handles the press when the bottom left button has been pressed */
     bottomLeftPress() {
         const bottomLeft = document.getElementById("glow-bottom-left");
         const bottomLeftWhite = document.getElementById("bottom-left white");
@@ -89,6 +93,7 @@ class Controller {
         }
     }
     
+    /** Handles the press when the top left button has been pressed */
     topLeftPress() {
         const topLeft = document.getElementById("glow-top-left");
         const topLeftWhite = document.getElementById("top-left white");
@@ -105,6 +110,7 @@ class Controller {
         } 
     }
     
+    /** Handles the press when the middle button has been pressed */
     middlePress() {
         const middle = document.getElementById("glow-middle");
         const middleWhite = document.getElementById("middle white");
@@ -121,6 +127,7 @@ class Controller {
         }
     }
     
+    /** Handles the press when the top right button has been pressed */
     topRightPress() {
         const topRight = document.getElementById("glow-top-right");
         const topRightWhite = document.getElementById("top-right white");
@@ -137,6 +144,7 @@ class Controller {
         } 
     }
     
+    /** Handles the press when the bottom right button has been pressed */
     bottomRightPress() {
         const bottomRight = document.getElementById("glow-bottom-right");
         const bottomRightWhite = document.getElementById("bottom-right white");
@@ -153,6 +161,7 @@ class Controller {
         }
     }
 
+    /** Flashes the arrow at the posiiton white */
     arrowFlash(position, white, colour) {
         position.style.boxShadow = "0px 0px 100px " + colour;
         white.style.opacity = "1";
@@ -162,6 +171,11 @@ class Controller {
         background.style.transform = "scale(1.01)";
     }
 
+    /**
+     * Handles the button release event depending on the button that has been released.
+     * 
+     * @param {*} event the key code of the key released
+     */
     handleRelease(event) {
         if (event.keyCode === 97) {
             this.bottomLeftRelease();
@@ -180,6 +194,7 @@ class Controller {
         }
     }
 
+    /** Handles the release event when the bottom left button has been released */
     bottomLeftRelease() {
         clearInterval(this.botLeftTimer);
         this.bottomLeft = false;
@@ -191,6 +206,7 @@ class Controller {
         this.arrowRelease(bottomLeft, bottomLeftWhite);
     }
     
+    /** Handles the release event when the top left button has been released */
     topLeftRelease() {
         clearInterval(this.topLeftTimer);
         this.topLeft = false;
@@ -202,6 +218,7 @@ class Controller {
         this.arrowRelease(topLeft, topLeftWhite);
     }
     
+    /** Handles the release event when the middle button has been released */
     middleRelease() {
         clearInterval(this.middleTimer);
         this.middle = false;
@@ -213,6 +230,7 @@ class Controller {
         this.arrowRelease(middle, middleWhite);
     }
     
+    /** Handles the release event when the top right button has been released */
     topRightRelease() {
         clearInterval(this.topRightTimer);
         this.topRight = false;
@@ -224,6 +242,7 @@ class Controller {
         this.arrowRelease(topRight, topRightWhite);
     }
     
+    /** Handles the release event when the bottom right button has been released */
     bottomRightRelease() {
         clearInterval(this.botRightTimer);
         this.bottomLeft = false;
@@ -235,6 +254,12 @@ class Controller {
         this.arrowRelease(bottomRight, bottomRightWhite);
     }
     
+    /**
+     * Handles the event when an arrow button has been released.
+     * 
+     * @param {*} position position of the arrow released 
+     * @param {*} white element that has been changed
+     */
     arrowRelease(position, white) {
         position.style.boxShadow = "none";
         white.style.opacity = "0";
@@ -244,61 +269,88 @@ class Controller {
     }
 }
 
-/* Game Logic */
+/** Class to represent the logic that will manipulate the game and teh interface */
 
 class Logic {
 
     constructor() {
 
+        /** Defines the gamemode to be singleplayer or multiplayer */
         this.gameMode = 0;
+
+        /** The player number assigned to the player when joining a lobby */
         this.playerNum;
+
+        /** Checks if the local player is ready */
         this.ready = false;
+
+        /** The queue at each position for normal arrow pieces */
         this.socket;
+
+        /** An array to represent which players are ready in the lobby */
         this.playersReady = [false, false, false, false];
+
+        /** Function that is bound to the ready button in the lobby */
         this.callMultiReady;
 
+        /** Timer to read the position values at each increment */
         this.timerID = null;
-        this.self = this;
 
+        /** Stores a track object of the track that will be played */
+        this.track;
+
+        /** Stores the bpm of the song track */
+        this.bpm;
+
+        /** Stores the delay between each piece */
+        this.pieceDelay;
+        
+        /** Stores an object of the game for each song */
+        this.game;
+        
+        /** Boolean to determine if the game has been started */
+        this.gameStart = false;
+
+        /** The queue at each position for normal arrow pieces */
         this.botLeftQueue = [];
         this.topLeftQueue = [];
         this.middleQueue = [];
         this.topRightQueue = [];
         this.botRightQueue = [];
 
+        /** The queue at each position for old arrow pieces */
         this.botLeftHoldQueue = [];
         this.topLeftHoldQueue = [];
         this.middleHoldQueue = [];
         this.topRightHoldQueue = [];
         this.botRightHoldQueue = [];
 
-        this.track;
-        this.bpm;
-        this.game;
-        this.gameStart = false;
-
+        /** Stores the DOM elements which will be changed on presses */
         this.textBox = document.getElementById("pop-up");
         this.arrowText = document.getElementById("arrow-text");
         this.comboNumber = document.getElementById("combo-number");
         this.comboText = document.getElementById("combo-text");
+
+        /** Stores the players current score and combo */
         this.combo = 0;
         this.score = 0;
     }
 
+    /**
+     * Sets the current track and BPM to the local player.
+     * 
+     * @param {*} track the song track
+     * @param {*} bpm number of beats per minute
+     */
     setGame(track, bpm) {
         this.track = track;
         this.bpm = bpm;
         this.pieceDelay = 60000/bpm;
-    }
-
-    loadGame() {
+        //Stores the object of the game as a data member of the logic object
         this.game = new Game(this.track, this.bpm);
     }
 
-    getGame() {
-        return this.game;
-    }
-
+    /** Starts the game depending on if it is singleplayer or multiplayer */
     startGame() {
         if (this.gameMode === 1) {
             this.singleplayerGame();
@@ -307,87 +359,109 @@ class Logic {
         }
     }
 
+    /** Starts a singleplayer game */
     singleplayerGame() {
         this.gameStart = true;
         this.timerID = setInterval(this.gameLoop.bind(this), this.pieceDelay);
     }
 
+    /** Starts a multiplayer game */
     multiplayerGame() {
         this.gameStart = true;
         this.timerID = setInterval(this.gameLoop.bind(this), this.pieceDelay);
     }
 
+    /** Changes the gamemode stored to a singleplayer game */
     startSingle() {
         this.gameMode = 1;
         this.clearMenu();
     }
 
+    /** Changes the gamemode stored to a multiplayer game and instantiates the multiplayer
+     *  socket object to handle the requests and emissions between the server.
+     */
     startMulti() {
         this.gameMode = 2;
         this.socket = io();
 
-        let name = document.getElementById("name-input").value;
-
+        //Handles the emit from the server, passing in the player number relative to the lobby
         this.socket.on('playerNumber', number => {
+            //If -1 is returned, then there are no spaces in the lobby
             if (number === -1) {
                 console.log("Server is full");
             } else {
-                this.currentPlayer(number, name);
+                //
+                this.currentPlayer(number, document.getElementById("name-input").value);
             }
         })
 
+        //Handles the emit from the server for when a player has connected to the lobby
         this.socket.on("playerConnection", number => {
-            console.log(`Player ${number} has connected or disconnected`);
+            console.log(`Player ${number} has connected`);
             this.playerConnect(number);
         });
 
+        //Handles the emit from the server for when a player has disconnected to the lobby
         this.socket.on("playerDisconnect", number => {
-            console.log(`Player ${number} has connected or disconnected`);
+            console.log(`Player ${number} has disconnected`);
             this.playerDisconnect(number);
         });
 
-        this.socket.on("enemy-ready", number => {
+        //Handles the emit from the server when an enemy is ready
+        this.socket.on("enemyReady", number => {
             this.playersReady[number] = true;
             this.playerReady(number);
         })
 
-        this.socket.on("enemy-unready", number => {
+        //Handles the emit from the server when an enemy is not ready
+        this.socket.on("enemyUnready", number => {
             this.playersReady[number] = false;
             this.playerUnready(number);
         })
 
-        this.socket.on("player-name", (number, name) => {
+        //Handles the emit from the server to provide the name of the player
+        this.socket.on("playerName", (number, name) => {
             this.playerName(number, name);
         })
     }
 
+    /**
+     * When the local player joins the lobby.
+     * 
+     * @param {*} number the player number 
+     * @param {*} name name of the player joining
+     */
     currentPlayer(number, name) {
-        console.log("called");
         this.callMultiReady = () => {
             this.multiReady(this.socket);
         };
+
         let player = `p${parseInt(number) + 1}`;
         this.playerNum = parseInt(number);
+
+        //Changes the interface of the lobby when a player joins
         document.getElementById(player).classList.add("current-player");
         document.getElementById(player + "-name").textContent = name;
         document.getElementById(player + "-connected").style.color = "rgb(3, 153, 3)";
         document.getElementById(player + "-click-ready").style.opacity = "1";
         document.getElementById(player).addEventListener('click', this.callMultiReady);
-        this.socket.emit("player-name", this.playerNum, name);
+
+        this.socket.emit("playerName", this.playerNum, name);
     }
     
     callMultiReady() {
         this.multiReady(this.socket);
     }
 
+
     multiReady(socket) {
         this.ready = !this.ready;
         console.log(this.playerNum);
         if (this.ready) {
-            socket.emit("player-ready");
+            socket.emit("playerReady");
             this.playerReady(this.playerNum);
         } else {
-            socket.emit("player-unready");
+            socket.emit("playerUnready");
             this.playerUnready(this.playerNum);
         }
     }
@@ -414,7 +488,6 @@ class Logic {
     playerConnect(number) {
         let player = `p${parseInt(number) + 1}`;
         document.getElementById(player + "-connected").style.color = "rgb(3, 153, 3)";
-        //Bolds the player number of the person connecting.
         if (parseInt(number) == this.playerNum) {
             document.getElementById(player + "-name").style.color = "rgb(3, 153, 3)";
         }
@@ -609,7 +682,7 @@ class Logic {
 
     gameLoop() {
         
-        if (this.getGame().getTrack().length != 0) {
+        if (this.game.getTrack().length != 0) {
             let frame = this.getFrame();
             if (frame.getHold() == 0) {
                 frame.positions.forEach(position => {
@@ -902,4 +975,4 @@ var map7 = "1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0
 var map8 = "1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n";
 const logic = new Logic();
 const controller = new Controller(logic);
-logic.setGame(map3, 240);
+logic.setGame(map8, 240);
