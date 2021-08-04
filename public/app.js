@@ -38,6 +38,7 @@ class Controller {
 
         /** Instantiates the elements for all the buttons to change screens */
         document.getElementById("start").addEventListener('click', this.logic.startGame.bind(this.logic));
+        document.getElementById("load").addEventListener('click', this.logic.loadGame.bind(this.logic));
         document.getElementById("single").addEventListener('click', this.logic.startSingle.bind(this.logic));
         document.getElementById("multi").addEventListener('click', this.logic.enterName.bind(this.logic));
         document.getElementById("lobby-back").addEventListener('click', this.logic.enterName.bind(this.logic));
@@ -359,6 +360,10 @@ class Logic {
         }
     }
 
+    loadGame() {
+        this.game = new Game(this.track, this.bpm);
+    }
+
     /** Starts a singleplayer game */
     singleplayerGame() {
         this.gameStart = true;
@@ -376,6 +381,10 @@ class Logic {
         this.gameMode = 1;
         this.clearMenu();
     }
+
+    /** Functions below are mostly to handle multiplayer transmissions between the server
+     * and the local player.
+     */
 
     /** Changes the gamemode stored to a multiplayer game and instantiates the multiplayer
      *  socket object to handle the requests and emissions between the server.
@@ -439,7 +448,7 @@ class Logic {
         let player = `p${parseInt(number) + 1}`;
         this.playerNum = parseInt(number);
 
-        //Changes the interface of the lobby when a player joins
+        //Changes the interface of the lobby when a player joins to the current player
         document.getElementById(player).classList.add("current-player");
         document.getElementById(player + "-name").textContent = name;
         document.getElementById(player + "-connected").style.color = "rgb(3, 153, 3)";
@@ -448,35 +457,47 @@ class Logic {
 
         this.socket.emit("playerName", this.playerNum, name);
     }
-    
-    callMultiReady() {
-        this.multiReady(this.socket);
-    }
 
-
-    multiReady(socket) {
+    /** The function that is bound to the ready button in the lobby */
+    multiReady() {
         this.ready = !this.ready;
         console.log(this.playerNum);
         if (this.ready) {
-            socket.emit("playerReady");
+            this.socket.emit("playerReady");
             this.playerReady(this.playerNum);
         } else {
-            socket.emit("playerUnready");
+            this.socket.emit("playerUnready");
             this.playerUnready(this.playerNum);
         }
     }
 
+    /**
+     * Changes the lobby interface to correctly represent the ready states of the players
+     * 
+     * @param {*} number the player that is now ready
+     */
     playerReady(number) {
         let player = `p${parseInt(number) + 1}`;
         document.getElementById(player + "-ready").style.color = "rgb(3, 153, 3)";
         document.getElementById(player + "-click-ready").style.opacity = "0";
     }
 
+    /**
+     * Changes the lobby interface to correctly display the names of players
+     * 
+     * @param {*} number the player number
+     * @param {*} name the name of the connected player
+     */
     playerName(number, name) {
         let player = `p${parseInt(number) + 1}`;
         document.getElementById(player + "-name").textContent = name;
     }
 
+    /**
+     * Changes the lobby interface to correctly represent the ready states of the players
+     * 
+     * @param {*} number the player that is no longer ready
+     */
     playerUnready(number) {
         let player = `p${parseInt(number) + 1}`;
         document.getElementById(player + "-ready").style.color = "rgb(135, 21, 21)";
@@ -485,6 +506,11 @@ class Logic {
         }
     }
 
+    /**
+     * Changes the lobby interface when a player has connected
+     * 
+     * @param {*} number the number of the player that has connected
+     */
     playerConnect(number) {
         let player = `p${parseInt(number) + 1}`;
         document.getElementById(player + "-connected").style.color = "rgb(3, 153, 3)";
@@ -493,6 +519,11 @@ class Logic {
         }
     }
 
+    /**
+     * Changes the lobby interface when a player has disconnected
+     * 
+     * @param {*} number the number of the player that has disconnected
+     */
     playerDisconnect(number) {
         let player = `p${parseInt(number) + 1}`;
         document.getElementById(player + "-connected").style.color = "rgb(135, 21, 21)";
@@ -500,6 +531,19 @@ class Logic {
         document.getElementById(player + "-name").textContent = "PLAYER " + (parseInt(number) + 1);
     }
 
+    /** When the local player has left the lobby, it will emit that to the server */
+    leaveLobby() {
+        this.playerDisconnect(this.playerNum);
+        let player = `p${this.playerNum + 1}`;
+        document.getElementById(player).removeEventListener('click', this.callMultiReady);
+        document.getElementById(player).classList.remove("current-player");
+        this.ready = false;
+        this.socket.emit("leaveLobby", this.playerNum); 
+    }
+
+    /** Functions in the logic class that are used to update the current stage of the game */
+
+    /** Clears the menu by moving it to the back and changing the opacity to 0 */
     clearMenu() {
         let menuScreen = document.getElementById("menuscreen");
         menuScreen.style.opacity = 0;
@@ -508,19 +552,24 @@ class Logic {
         }, 1000);
     }
 
+    /** Displays the view of the lobby, if this is the first time connecting, a socket
+     *  is instantiated, if not, then the number of the player is received.
+     */
     displayLobby() {
         if (this.socket == undefined) {
             this.startMulti();
         } else {
-            console.log("here123");
             this.socket.emit("getNumber");
         }
-        this.clearNameEnter();
+        this.clearEnterName();
         let lobbyScreen = document.getElementById("lobby");
         lobbyScreen.style.opacity = 1;
         lobbyScreen.style.zIndex = 997;
     }
 
+    /** Displays the stage where the player is to enter their name.
+     *  The previous screen is sent to the back and the player number is reset to null.
+     */
     enterName() {
         this.clearLobby();
         this.clearMenu();
@@ -534,15 +583,7 @@ class Logic {
         this.playerNum = null;
     }
 
-    leaveLobby() {
-        this.playerDisconnect(this.playerNum);
-        let player = `p${this.playerNum + 1}`;
-        document.getElementById(player).removeEventListener('click', this.callMultiReady);
-        document.getElementById(player).classList.remove("current-player");
-        this.ready = false;
-        this.socket.emit("leaveLobby", this.playerNum); 
-    }
-
+    /** Displays the stage where the player is to select the type of gamemode they're playing */
     gameSelect() {
         this.clearNameEnter();
         let menuScreen = document.getElementById("menuscreen");
@@ -550,6 +591,7 @@ class Logic {
         menuScreen.style.zIndex = 999;
     }
 
+    /** Moves the lobby stage out of view and sends it to the back */
     clearLobby() {
         let lobbyScreen = document.getElementById("lobby");
         lobbyScreen.style.opacity = 0;
@@ -558,7 +600,8 @@ class Logic {
         }, 1000);
     }
 
-    clearNameEnter() {        
+    /** Moves the lobby stage out of view and sends it to the back */
+    clearEnterName() {        
         let nameEnter = document.getElementById("enter-name");
         nameEnter.style.opacity = 0;
         setTimeout(() => {
@@ -566,20 +609,36 @@ class Logic {
         }, 1000);
     }
 
+    /** Functions below are to handle the game functionality on the local side */
 
+    /**
+     * Returns the current track that is being stored.
+     * 
+     * @returns current track
+     */
     getTrack() {
         return this.game.getTrack();
     }
 
+    /**
+     * Returns the current frame of the track.
+     * 
+     * @returns frame of the track
+     */
     getFrame() {
         return this.game.getTrack().shift();
     }
 
+    /**
+     * Handles the game logic when a button has been pressed.
+     * 
+     * @param {*} position button position being pressed
+     * @param {*} held if the button has been held down
+     */
     pressPiece(position, held) {
-        var d = new Date();
-        var currentTime = d.getSeconds() * 1000 + d.getMilliseconds();
+        var date = new Date();
+        var currentTime = date.getSeconds() * 1000 + date.getMilliseconds();
         let timeDifference;
-        let absoluteDifference;
         let queue;
         let holdQueue;
 
@@ -648,7 +707,7 @@ class Logic {
 
             let displayText;
             let colour;
-            absoluteDifference = Math.abs(timeDifference);
+            let absoluteDifference = Math.abs(timeDifference);
             if (absoluteDifference < 50) {
                 displayText = "PERFECT";
                 colour = "#aaaaff"
@@ -680,8 +739,10 @@ class Logic {
         }
     }
 
+    /** The function that will be loooped repeatedly until the game has stopped.
+     *  The method will repeatedly add arrows to the tracklist array at the bpm specified.
+    */
     gameLoop() {
-        
         if (this.game.getTrack().length != 0) {
             let frame = this.getFrame();
             if (frame.getHold() == 0) {
@@ -699,6 +760,11 @@ class Logic {
         }
     }
 
+    /**
+     * Adds to the score depending on the timing.
+     * 
+     * @param {*} text that is to be displayed
+     */
     addScore(text) {
         let multiplier = this.combo/100 + 1;
         if (text == "PERFECT") {
@@ -711,6 +777,13 @@ class Logic {
         console.log(this.score);
     }
 
+    /**
+     * Changes the text displayed on the board for each arrow
+     * 
+     * @param {*} text to be displayed
+     * @param {*} combo hits in a row
+     * @param {*} colour colour of the display text
+     */
     changeText(text, combo, colour) {
         console.log(text);
         if (combo > 3) {
@@ -726,7 +799,6 @@ class Logic {
         this.textBox.classList.remove("appear");
         this.textBox.offsetWidth;
         this.textBox.classList.add("appear");
-
     }
 
     makeArrow(position) {
