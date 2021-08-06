@@ -88,6 +88,19 @@ io.on("connection", socket => {
     socket.on("playerReady", () => {
         socket.broadcast.emit("enemyReady", playerIndex);
         connections[playerIndex] = true;
+        let startGame = true;
+        console.log(names);
+        console.log(connections);
+        for (const i in connections) {
+            if (names[i] != null && connections[i] == false) {
+                startGame = false;
+            }
+        }
+        if (startGame) {
+            console.log("emmited");
+            socket.broadcast.emit("startGame");
+            socket.emit("startGame");
+        }
     })
 
     socket.on("playerUnready", () => {

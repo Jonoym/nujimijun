@@ -1,9 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Lexend+Mega&display=swap');
-* {
+@import url('https://fonts.googleapis.com/css2?family=Atomic+Age&display=swap');* {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
     font-family: 'Lexend Mega', sans-serif;
+}
+
+body {
+    background: black;
 }
 
 .background {
@@ -23,7 +27,7 @@
 
 /* Styling for the loading and waiting screen. */
 
-#loadscreen, #menuscreen, #lobby, #enter-name {
+#loadscreen, #menuscreen, #lobby, #enter-name, #stats {
     width: 100%;
     height: 100vh;
     z-index: 999;
@@ -126,6 +130,7 @@
 
 #lobby {
     z-index: 0;
+    opacity: 0;
 }
 
 #song-select, #player-list {
@@ -242,6 +247,10 @@
     display: flex;
     position: absolute;
     overflow: hidden;
+    opacity: 0;
+    z-index: 0;
+
+    transition: all 1s ease;
 }
 
 #game .container {
@@ -418,4 +427,117 @@
         opacity: 0;
         transform: scaleY(0.5) translateX(10vw);
     }
+}
+
+/* End Game Stats */
+
+#stats {
+    z-index: 0;
+    opacity: 0;
+    display: flex;
+    flex-direction: column;
+    background: transparent;
+}
+
+#stats .buttons {
+    width: 100%;
+    height: 10%;
+    margin-top: 5%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#stats .buttons button {
+    height: 20%;
+
+    font-size: 2rem;
+    color: #30aaaa;
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin: 0px 5%;
+    transition: all 0.3s ease;
+}
+
+#stats .buttons button:hover {
+    color: #aaaaff;
+}
+
+#stats #grade {
+    font-size: 20rem;
+    text-emphasis: bold;
+    font-family: "Atomic Age", cursive;
+    margin-right: 10%;
+    margin-left: 5%;
+    color: #aaaaff;
+    text-shadow: 5px 5px 30px #555555;
+    background: black;
+
+    animation: wait 5s infinite ease;
+}
+
+#stats .container {
+    width: 65vw;
+    height: 55vh;
+    
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    border-radius: 10px;
+}
+
+#stats .stat-info {
+    height: 100%;
+    width: 70%;
+    margin: 50px 0;
+
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+}
+
+#stats .stat-info h2 {
+    width: 100%;
+    font-size: 2.3rem;
+    color: white;
+    margin-top: 10px;
+    justify-content: space-between;
+    display: flex;
+    border-bottom: 5px solid #333333;
+    border-radius: 3px;
+    padding: 10px;
+}
+
+#stats .stat-info h3 {
+    width: 100%;
+    color: white;
+    font-size: 1.5rem;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 3px;
+    justify-content: space-between;
+    display: flex;
+    border-bottom: 5px solid #333333;
+}
+
+.perfect {
+    color: #aaaaff;
+}
+
+.good {
+    color: #40e0d0;
+}
+
+.okay {
+    color: #ffb347;
+}
+
+.miss {
+    color: #ff6961;
+}
+
+.combo {
+    color: grey;
 }

@@ -40,10 +40,14 @@ class Controller {
         document.getElementById("start").addEventListener('click', this.logic.startGame.bind(this.logic));
         document.getElementById("load").addEventListener('click', this.logic.loadGame.bind(this.logic));
         document.getElementById("single").addEventListener('click', this.logic.startSingle.bind(this.logic));
-        document.getElementById("multi").addEventListener('click', this.logic.enterName.bind(this.logic));
-        document.getElementById("lobby-back").addEventListener('click', this.logic.enterName.bind(this.logic));
-        document.getElementById("name-back").addEventListener('click', this.logic.gameSelect.bind(this.logic));
+        document.getElementById("multi").addEventListener('click', this.logic.displayEnterName.bind(this.logic));
+        document.getElementById("lobby-back").addEventListener('click', this.logic.displayEnterName.bind(this.logic));
+        document.getElementById("name-back").addEventListener('click', this.logic.displaySelect.bind(this.logic));
         document.getElementById("next").addEventListener('click', this.logic.displayLobby.bind(this.logic));
+        document.getElementById("game-to-menu").addEventListener('click', this.logic.displaySelect.bind(this.logic));
+        document.getElementById("game-to-settings").addEventListener('click', this.logic.displayLobby.bind(this.logic));
+        document.getElementById("game-to-song-select").addEventListener('click', this.logic.displayLobby.bind(this.logic));
+        document.getElementById("game-to-play-again").addEventListener('click', this.logic.startSingle.bind(this.logic));
     }
 
     /**
@@ -165,10 +169,10 @@ class Controller {
     /** Flashes the arrow at the posiiton white */
     arrowFlash(position, white, colour) {
         position.style.boxShadow = "0px 0px 100px " + colour;
-        white.style.opacity = "1";
-        white.style.zIndex = "999";
+        white.style.opacity = 1;
+        white.style.zIndex = 999;
         const background = document.getElementById("wallpaper");
-        background.style.opacity = "0.65";
+        background.style.opacity = 0.65;
         background.style.transform = "scale(1.01)";
     }
 
@@ -263,14 +267,14 @@ class Controller {
      */
     arrowRelease(position, white) {
         position.style.boxShadow = "none";
-        white.style.opacity = "0";
+        white.style.opacity = 0;
         const background = document.getElementById("wallpaper");
-        background.style.opacity = "0.6";
+        background.style.opacity = 0.6;
         background.style.transform = "scale(1)";
     }
 }
 
-/** Class to represent the logic that will manipulate the game and teh interface */
+/** Class to represent the logic that will manipulate the game and the interface */
 
 class Logic {
 
@@ -312,6 +316,9 @@ class Logic {
         /** Boolean to determine if the game has been started */
         this.gameStart = false;
 
+        /** Boolean to determine if the game has ended */
+        this.gameEnd = false;
+
         /** The queue at each position for normal arrow pieces */
         this.botLeftQueue = [];
         this.topLeftQueue = [];
@@ -335,6 +342,12 @@ class Logic {
         /** Stores the players current score and combo */
         this.combo = 0;
         this.score = 0;
+        this.perfectCount = 0;
+        this.goodCount = 0;
+        this.okayCount = 0;
+        this.missCount = 0;
+        this.maxCombo = 0;
+
     }
 
     /**
@@ -360,6 +373,7 @@ class Logic {
         }
     }
 
+    /** Creates a new game with the track and bpm that is stroed in the logic */
     loadGame() {
         this.game = new Game(this.track, this.bpm);
     }
@@ -379,6 +393,7 @@ class Logic {
     /** Changes the gamemode stored to a singleplayer game */
     startSingle() {
         this.gameMode = 1;
+        this.displayGame();
         this.clearMenu();
     }
 
@@ -389,7 +404,7 @@ class Logic {
     /** Changes the gamemode stored to a multiplayer game and instantiates the multiplayer
      *  socket object to handle the requests and emissions between the server.
      */
-    startMulti() {
+    joinMulti() {
         this.gameMode = 2;
         this.socket = io();
 
@@ -399,7 +414,6 @@ class Logic {
             if (number === -1) {
                 console.log("Server is full");
             } else {
-                //
                 this.currentPlayer(number, document.getElementById("name-input").value);
             }
         })
@@ -432,7 +446,63 @@ class Logic {
         this.socket.on("playerName", (number, name) => {
             this.playerName(number, name);
         })
+
+        this.socket.on("startGame", () => {
+            console.log("started game")
+            this.clearLobby();
+            this.displayGame();
+            this.multiplayerGame();
+        } )
     }
+
+    /** Displays the gameboard */
+    displayGame() {
+        this.resetStats();
+        this.clearStats();
+        let gameboard = document.getElementById("game");
+        gameboard.style.opacity = 1;
+        gameboard.style.zIndex = 999;
+    }
+
+    /** Resets the game stats */
+    resetStats() {
+        this.combo = 0;
+        this.score = 0;
+        this.perfectCount = 0;
+        this.goodCount = 0;
+        this.okayCount = 0;
+        this.missCount = 0;
+        this.maxCombo = 0;
+    }
+
+    /** Displays the gameboard */
+    clearGame() {
+        let gameboard = document.getElementById("game");
+        gameboard.style.opacity = 0;
+        gameboard.style.zIndex = 0;
+    }
+    
+    displayStats() {
+        this.clearGame();
+        let gameboard = document.getElementById("stats");
+        gameboard.style.opacity = 1;
+        gameboard.style.zIndex = 999;
+        document.getElementById("score").textContent = this.score;
+        document.getElementById("perfect").textContent = this.perfectCount;
+        document.getElementById("good").textContent = this.goodCount;
+        document.getElementById("okay").textContent = this.okayCount;
+        document.getElementById("miss").textContent = this.missCount;
+        document.getElementById("max-combo").textContent = this.maxCombo;
+    }
+
+    clearStats() {
+        console.log("here");
+        let gameboard = document.getElementById("stats");
+        gameboard.style.opacity = 0;
+        gameboard.style.zIndex = 0;
+    }
+
+    //Make the click-ready disappear
 
     /**
      * When the local player joins the lobby.
@@ -447,6 +517,7 @@ class Logic {
 
         let player = `p${parseInt(number) + 1}`;
         this.playerNum = parseInt(number);
+        console.log(this.playerNum);
 
         //Changes the interface of the lobby when a player joins to the current player
         document.getElementById(player).classList.add("current-player");
@@ -531,16 +602,6 @@ class Logic {
         document.getElementById(player + "-name").textContent = "PLAYER " + (parseInt(number) + 1);
     }
 
-    /** When the local player has left the lobby, it will emit that to the server */
-    leaveLobby() {
-        this.playerDisconnect(this.playerNum);
-        let player = `p${this.playerNum + 1}`;
-        document.getElementById(player).removeEventListener('click', this.callMultiReady);
-        document.getElementById(player).classList.remove("current-player");
-        this.ready = false;
-        this.socket.emit("leaveLobby", this.playerNum); 
-    }
-
     /** Functions in the logic class that are used to update the current stage of the game */
 
     /** Clears the menu by moving it to the back and changing the opacity to 0 */
@@ -552,12 +613,22 @@ class Logic {
         }, 1000);
     }
 
+    /** When the local player has left the lobby, it will emit that to the server */
+    leaveLobby() {
+        this.playerDisconnect(this.playerNum);
+        let player = `p${this.playerNum + 1}`;
+        document.getElementById(player).removeEventListener('click', this.callMultiReady);
+        document.getElementById(player).classList.remove("current-player");
+        this.ready = false;
+        this.socket.emit("leaveLobby", this.playerNum); 
+    }
+
     /** Displays the view of the lobby, if this is the first time connecting, a socket
      *  is instantiated, if not, then the number of the player is received.
      */
     displayLobby() {
         if (this.socket == undefined) {
-            this.startMulti();
+            this.joinMulti();
         } else {
             this.socket.emit("getNumber");
         }
@@ -570,7 +641,7 @@ class Logic {
     /** Displays the stage where the player is to enter their name.
      *  The previous screen is sent to the back and the player number is reset to null.
      */
-    enterName() {
+    displayEnterName() {
         this.clearLobby();
         this.clearMenu();
         let enterName = document.getElementById("enter-name");
@@ -584,8 +655,9 @@ class Logic {
     }
 
     /** Displays the stage where the player is to select the type of gamemode they're playing */
-    gameSelect() {
-        this.clearNameEnter();
+    displaySelect() {
+        this.clearEnterName();
+        this.clearStats();
         let menuScreen = document.getElementById("menuscreen");
         menuScreen.style.opacity = 1;
         menuScreen.style.zIndex = 999;
@@ -710,30 +782,40 @@ class Logic {
             let absoluteDifference = Math.abs(timeDifference);
             if (absoluteDifference < 50) {
                 displayText = "PERFECT";
+                this.perfectCount++;
                 colour = "#aaaaff"
             } else if (absoluteDifference < 90) {
                 displayText = "GOOD";
+                this.goodCount++;
                 colour = "#40e0d0";
             } else if (absoluteDifference < 120) {
                 displayText = "OKAY";
+                this.okayCount++;
                 colour = "#ffb347";
             } else {
                 return;
             }
             
             this.combo++;
+            if (this.combo > this.maxCombo) {
+                this.maxCombo = this.combo;
+            }
             this.changeText(displayText, this.combo, colour);
             this.addScore(displayText);
-            queue[0][0].style.opacity = "0";
+            queue[0][0].style.opacity = 0;
             queue[0][2] = true;
         }
 
         if (holdQueue != undefined && holdQueue[0][4] != true) {
             if (timeDifference > -10 && timeDifference < 40) {
                 this.combo++;
+                if (this.combo > this.maxCombo) {
+                    this.maxCombo = this.combo;
+                }
+                this.perfectCount++;
                 this.changeText("PERFECT", this.combo, "#aaaaff");
                 this.addScore("PERFECT");
-                holdQueue[0][0].style.opacity = "0";
+                holdQueue[0][0].style.opacity = 0;
                 holdQueue[0][4] = true;
             }
         }
@@ -743,10 +825,12 @@ class Logic {
      *  The method will repeatedly add arrows to the tracklist array at the bpm specified.
     */
     gameLoop() {
-        if (this.game.getTrack().length != 0) {
+        console.log(this.game.getTrack().length);
+        if (this.game.getTrack().length != 0 && this.gameEnd == false) {
             let frame = this.getFrame();
             if (frame.getHold() == 0) {
-                frame.positions.forEach(position => {
+                let positions = frame.getPositions();
+                positions.forEach(position => {
                     this.makeArrow(position);
                 });
             } else {
@@ -757,6 +841,9 @@ class Logic {
         } else {
             clearInterval(this.timerID);
             this.gameStart = false;
+            this.displayStats();
+            this.clearGame();
+            console.log("ENDED");
         }
     }
 
@@ -848,11 +935,12 @@ class Logic {
                 if (currentTime > arrowTime + 2000 && queue[0][2] != true) {
                     this.combo = 0;
                     this.changeText("MISS", this.combo, "#ff6961");
+                    this.missCount++;
                     this.addScore("MISS");
                 }
                 queue.shift();
                 element.removeChild(arrow);
-                arrow = undefined;
+                arrow.remove();
             }, 2100);
         }
         setTimeout(()=> {
@@ -1038,13 +1126,13 @@ var map3 = "1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0
 
 var map4 = "1,5 0\n3 0\n3 0\n2 0\n\n2 0\n3 0\n1 0\n3 0\n2 0\n4 0\n3 0\n5 0\n3 0\n4 0\n2 0\n3 1\n2 0\n5 0\n3 0\n";
 
-var map5 = "\n\n\n\n\n\n\n1 6\n3 1\n4 2\n"
+var map5 = "\n\n\n\n\n\n\n1,2 6\n3 1\n4 2\n"
 
 var map6 = "1,2 0\n1,2 0\n4,5 0\n3,4 0\n1,2 0\n1,2 0\n4,5 0\n3,4 0\n1,2 0\n1,2 0\n4,5 0\n3,4 0\n1,2 0\n1,2 0\n4,5 0\n3,4 0\n1,2 0\n1,2 0\n4,5 0\n3,4 0\n"
 
 var map7 = "1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n";
 
-var map8 = "1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n";
+var map8 = "1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n\n\n\n\n\n\n\n\n\n\n\n";
 const logic = new Logic();
 const controller = new Controller(logic);
 logic.setGame(map8, 240);
