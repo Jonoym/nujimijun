@@ -424,6 +424,11 @@ class Logic {
             this.playerConnect(number);
         });
 
+        //Handles the emit from the server to provide the name of the player
+        this.socket.on("playerName", (number, name) => {
+            this.playerName(number, name);
+        })
+
         //Handles the emit from the server for when a player has disconnected to the lobby
         this.socket.on("playerDisconnect", number => {
             console.log(`Player ${number} has disconnected`);
@@ -442,13 +447,7 @@ class Logic {
             this.playerUnready(number);
         })
 
-        //Handles the emit from the server to provide the name of the player
-        this.socket.on("playerName", (number, name) => {
-            this.playerName(number, name);
-        })
-
         this.socket.on("startGame", () => {
-            console.log("started game")
             this.clearLobby();
             this.displayGame();
             this.multiplayerGame();
@@ -496,7 +495,6 @@ class Logic {
     }
 
     clearStats() {
-        console.log("here");
         let gameboard = document.getElementById("stats");
         gameboard.style.opacity = 0;
         gameboard.style.zIndex = 0;
@@ -512,18 +510,18 @@ class Logic {
      */
     currentPlayer(number, name) {
         this.callMultiReady = () => {
-            this.multiReady(this.socket);
+            this.multiReady();
         };
 
         let player = `p${parseInt(number) + 1}`;
         this.playerNum = parseInt(number);
-        console.log(this.playerNum);
 
         //Changes the interface of the lobby when a player joins to the current player
         document.getElementById(player).classList.add("current-player");
         document.getElementById(player + "-name").textContent = name;
         document.getElementById(player + "-connected").style.color = "rgb(3, 153, 3)";
         document.getElementById(player + "-click-ready").style.opacity = "1";
+        document.getElementById(player).style.transform = "translateX(0%)";
         document.getElementById(player).addEventListener('click', this.callMultiReady);
 
         this.socket.emit("playerName", this.playerNum, name);
@@ -532,13 +530,12 @@ class Logic {
     /** The function that is bound to the ready button in the lobby */
     multiReady() {
         this.ready = !this.ready;
-        console.log(this.playerNum);
         if (this.ready) {
-            this.socket.emit("playerReady");
             this.playerReady(this.playerNum);
+            this.socket.emit("playerReady", this.playerNum);
         } else {
-            this.socket.emit("playerUnready");
             this.playerUnready(this.playerNum);
+            this.socket.emit("playerUnready", this.playerNum);
         }
     }
 
@@ -584,9 +581,9 @@ class Logic {
      */
     playerConnect(number) {
         let player = `p${parseInt(number) + 1}`;
-        document.getElementById(player + "-connected").style.color = "rgb(3, 153, 3)";
+        document.getElementById(player).style.transform = "translateX(0%)";
         if (parseInt(number) == this.playerNum) {
-            document.getElementById(player + "-name").style.color = "rgb(3, 153, 3)";
+            document.getElementById(player).classList.add("current-player");
         }
     }
 
@@ -597,9 +594,12 @@ class Logic {
      */
     playerDisconnect(number) {
         let player = `p${parseInt(number) + 1}`;
-        document.getElementById(player + "-connected").style.color = "rgb(135, 21, 21)";
         document.getElementById(player + "-ready").style.color = "rgb(135, 21, 21)";
-        document.getElementById(player + "-name").textContent = "PLAYER " + (parseInt(number) + 1);
+        document.getElementById(player).style.transform = "translateX(100%)";
+        document.getElementById(player + "-name").textContent = " ";
+        if (parseInt(number) == this.playerNum) {
+            document.getElementById(player).classList.remove("current-player");
+        }
     }
 
     /** Functions in the logic class that are used to update the current stage of the game */
@@ -616,9 +616,10 @@ class Logic {
     /** When the local player has left the lobby, it will emit that to the server */
     leaveLobby() {
         this.playerDisconnect(this.playerNum);
+        console.log("Player has left the lobby");
         let player = `p${this.playerNum + 1}`;
         document.getElementById(player).removeEventListener('click', this.callMultiReady);
-        document.getElementById(player).classList.remove("current-player");
+        document.getElementById(player + "-click-ready").style.opacity = "0";
         this.ready = false;
         this.socket.emit("leaveLobby", this.playerNum); 
     }
@@ -630,7 +631,7 @@ class Logic {
         if (this.socket == undefined) {
             this.joinMulti();
         } else {
-            this.socket.emit("getNumber");
+            this.socket.emit("getNumber", document.getElementById("name-input").value);
         }
         this.clearEnterName();
         let lobbyScreen = document.getElementById("lobby");

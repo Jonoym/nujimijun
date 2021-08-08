@@ -164,8 +164,9 @@ body {
     margin: 10px 0px 10px 10px;
     margin-left: 5%;
 
-    transition: all 0.5s ease;
+    transition: all 1s ease;
     text-shadow: 2px 2px 5px black;
+    transform: translateX(100%);
 }
 
 .player:hover {
@@ -200,9 +201,13 @@ body {
     transition: all 0.5s ease;
 }
 
-#p2-connected, #p3-connected, #p4-connected,
-#p1-ready, #p2-ready, #p3-ready, #p4-ready, #p1-connected {
+#p1-ready, #p2-ready, #p3-ready, #p4-ready {
     color: rgb(135, 21, 21);
+    transition: all 0.5s ease;
+}
+
+#p1-connected, #p2-connected, #p3-connected, #p4-connected {
+    color: rgb(3, 153, 3);
     transition: all 0.5s ease;
 }
 
@@ -211,6 +216,7 @@ body {
     width: 100%;
     height: 25%;
     background: rgba(53, 53, 61, 0.7);
+    transform: translateX(0%);
 }
 
 .current-player h1 {
@@ -473,8 +479,7 @@ body {
     margin-left: 5%;
     color: #aaaaff;
     text-shadow: 5px 5px 30px #555555;
-    background: black;
-
+    
     animation: wait 5s infinite ease;
 }
 
