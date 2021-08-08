@@ -8,7 +8,10 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <section id="loadscreen">
+    <div id="wallpaper">
+        <img src="./assets/wallpaper.jpg" alt="" class="background" id="wallpaper-image">
+    </div>
+    <section id="loadscreen" class="black">
         <div class="waiting-text">PRESS ANY KEY TO START</div>
     </section>
     <section id="menuscreen">
@@ -27,41 +30,47 @@
         <div id="player-list">
             <div id = "p1" class="player">
                 <div class="container">
-                    <h1 id="p1-name">PLAYER 1</h1>
+                    <h1 id="p1-name"></h1>
                     <h3 id="p1-connected">Connected</h3>
                     <h3 id="p1-ready" class=>Ready</h3>
                 </div>
+                <p class="multi-combo" id="p1-combo">x0</p>
+                <p class="multi-score" id="p1-score">0</p>
                 <span id="p1-click-ready">CLICK TO READY</span>
             </div>
             <div id="p2" class="player">
                 <div class="container">
-                    <h1 id="p2-name">PLAYER 2</h1>
+                    <h1 id="p2-name"></h1>
                     <h3 id="p2-connected">Connected</h3>
                     <h3 id="p2-ready">Ready</h3>
                 </div>
+                <p id="p2-combo" class="multi-combo">x0</p>
+                <p id="p2-score" class="multi-score">0</p>
                 <span id="p2-click-ready">CLICK TO READY</span>
             </div>
             <div id="p3" class="player">
                 <div class="container">
-                    <h1 id="p3-name">PLAYER 3</h1>
+                    <h1 id="p3-name"></h1>
                     <h3 id="p3-connected">Connected</h3>
                     <h3 id="p3-ready">Ready</h3>
                 </div>
-                <span id="p3-click-ready">CLICK TO READY</span>
+                <p id="p3-combo" class="multi-combo">x0</p>
+                <p id="p3-score" class="multi-score">0</p>
+                <span id="p3-click-ready" class="ready-click">CLICK TO READY</span>
             </div>
             <div id="p4" class="player">
                 <div class="container">
-                    <h1 id="p4-name">PLAYER 4</h1>
+                    <h1 id="p4-name"></h1>
                     <h3 id="p4-connected">Connected</h3>
                     <h3 id="p4-ready">Ready</h3>
                 </div>
-                <span id="p4-click-ready">CLICK TO READY</span>
+                <p id="p4-combo" class="multi-combo">x0</p>
+                <p id="p4-score" class="multi-score">0</p>
+                <span id="p4-click-ready" class="ready-click">CLICK TO READY</span>
             </div>
         </div>
     </section>
     <section id="game">
-        <div class="background black"></div>
-        <img src="./assets/wallpaper.jpg" alt="" class="background" id="wallpaper">
         <div class="menu">
             <button id="start">START</button>
             <button id="load">LOAD</button>

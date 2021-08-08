@@ -10,14 +10,21 @@ body {
     background: black;
 }
 
+#wallpaper {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    position: absolute;
+}
+
 .background {
     width: 100%;
     height: 100vh;
     opacity: 0.2;
-    background: black;
-    position: absolute;
+    position: relative;
 
     transition: all 0.5s ease;
+    overflow: hidden;
 }
 
 .black {
@@ -31,7 +38,6 @@ body {
     width: 100%;
     height: 100vh;
     z-index: 999;
-    background: black;
 
     position: absolute;
     display: flex;
@@ -96,7 +102,7 @@ body {
 
 #enter-name input {
     position: relative;
-    width: 50%;
+    width: 90%;
     height: 10vh;
     top: -10vh;
     color: #9999ee;
@@ -147,6 +153,7 @@ body {
 #player-list {
     margin-right: 0;
     width: 50%;
+    transition: all 2s ease;
 }
 
 .player {
@@ -178,7 +185,7 @@ body {
 }
 
 .player .container {
-    margin-left: 40px;
+    margin-left: 3%;
     position: absolute;
 }
 
@@ -193,11 +200,11 @@ body {
 }
 
 .player h1, .player h3 {
-    margin: 10px 0;
+    margin: 7px 0;
 }
 
 .player h1 {
-    font-size: 2rem;
+    font-size: 1.7rem;
     transition: all 0.5s ease;
 }
 
@@ -211,7 +218,28 @@ body {
     transition: all 0.5s ease;
 }
 
+.player .multi-combo {
+    color: white;
+    position: absolute;
+    top: 60%;
+    margin-left: 3%;
+    font-size: 1.5rem;
+    opacity: 0;
+    transition: all 1s ease;
+}
+
+.player .multi-score{
+    color: white;
+    position: absolute;
+    top: 25%;
+    right: 55%;
+    font-size: 2.3rem;
+    opacity: 0;
+    transition: all 1s ease;
+}
+
 .current-player {
+    text-emphasis: none;
     margin-left: 0;
     width: 100%;
     height: 25%;
@@ -221,6 +249,11 @@ body {
 
 .current-player h1 {
     color: #9999ee;
+    font-size: 2rem;
+}
+
+.current-player .multi-score {
+    right: 53%;
 }
 
 .back {
@@ -246,7 +279,6 @@ body {
 #game {
     width: 100%;
     height: 100vh;
-    background: white;
 
     justify-content: center;
     align-items: center;

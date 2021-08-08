@@ -171,7 +171,7 @@ class Controller {
         position.style.boxShadow = "0px 0px 100px " + colour;
         white.style.opacity = 1;
         white.style.zIndex = 999;
-        const background = document.getElementById("wallpaper");
+        const background = document.getElementById("wallpaper-image");
         background.style.opacity = 0.65;
         background.style.transform = "scale(1.01)";
     }
@@ -448,7 +448,7 @@ class Logic {
         })
 
         this.socket.on("startGame", () => {
-            this.clearLobby();
+            this.movePlayerList();
             this.displayGame();
             this.multiplayerGame();
         } )
@@ -460,7 +460,7 @@ class Logic {
         this.clearStats();
         let gameboard = document.getElementById("game");
         gameboard.style.opacity = 1;
-        gameboard.style.zIndex = 999;
+        gameboard.style.zIndex = 998;
     }
 
     /** Resets the game stats */
@@ -481,8 +481,10 @@ class Logic {
         gameboard.style.zIndex = 0;
     }
     
+    /** Displays the stat at the end of a game. */
     displayStats() {
         this.clearGame();
+        this.clearLobby();
         let gameboard = document.getElementById("stats");
         gameboard.style.opacity = 1;
         gameboard.style.zIndex = 999;
@@ -494,6 +496,7 @@ class Logic {
         document.getElementById("max-combo").textContent = this.maxCombo;
     }
 
+    /** Clears the game stats display. */
     clearStats() {
         let gameboard = document.getElementById("stats");
         gameboard.style.opacity = 0;
@@ -673,6 +676,22 @@ class Logic {
         }, 1000);
     }
 
+    movePlayerList() {
+        let lobbyScreen = document.getElementById("lobby");
+        let playerList = document.getElementById("player-list");
+        let player = `p${this.playerNum + 1}`;
+        lobbyScreen.style.background = "transparent";
+        playerList.style.transform = "translateX(50%)";
+        console.log(this.playerNum);
+        document.getElementById(player + "-combo").style.opacity = 1;
+        document.getElementById(player + "-score").style.opacity = 1;
+        document.getElementById(player + "-ready").style.opacity = 0;
+        document.getElementById(player + "-connected").style.opacity = 0;
+        playerList.style.width = "50%";
+        playerList.style.height = "50%";
+        lobbyScreen.style.zIndex = 999;
+    }
+
     /** Moves the lobby stage out of view and sends it to the back */
     clearEnterName() {        
         let nameEnter = document.getElementById("enter-name");
@@ -803,6 +822,7 @@ class Logic {
             }
             this.changeText(displayText, this.combo, colour);
             this.addScore(displayText);
+            this.changeSideBar(this.playerNum, this.score, this.combo);
             queue[0][0].style.opacity = 0;
             queue[0][2] = true;
         }
@@ -816,6 +836,7 @@ class Logic {
                 this.perfectCount++;
                 this.changeText("PERFECT", this.combo, "#aaaaff");
                 this.addScore("PERFECT");
+                this.changeSideBar(this.playerNum, this.score, this.combo);
                 holdQueue[0][0].style.opacity = 0;
                 holdQueue[0][4] = true;
             }
@@ -873,7 +894,6 @@ class Logic {
      * @param {*} colour colour of the display text
      */
     changeText(text, combo, colour) {
-        console.log(text);
         if (combo > 3) {
             this.comboNumber.style.opacity = 1;
             this.comboText.style.opacity = 1;
@@ -887,6 +907,12 @@ class Logic {
         this.textBox.classList.remove("appear");
         this.textBox.offsetWidth;
         this.textBox.classList.add("appear");
+    }
+
+    changeSideBar(number, score, combo) {
+        let player = `p${number + 1}`;
+        document.getElementById(player + "-combo").textContent = "x" + combo;
+        document.getElementById(player + "-score").textContent = score;
     }
 
     makeArrow(position) {
@@ -938,6 +964,7 @@ class Logic {
                     this.changeText("MISS", this.combo, "#ff6961");
                     this.missCount++;
                     this.addScore("MISS");
+                    this.changeSideBar(this.playerNum, this.score, this.combo);
                 }
                 queue.shift();
                 element.removeChild(arrow);
@@ -1031,6 +1058,7 @@ class Logic {
                 if (currentTime > arrowTime + 2000 && queue[0][4] != true) {
                     this.combo = 0;
                     this.changeText("MISS", this.combo, "#ff6961");
+                    this.changeSideBar(this.playerNum, this.score, this.combo);
                 }
                 queue.shift();
                 element.removeChild(arrowStart);
@@ -1049,6 +1077,7 @@ class Logic {
                     if (currentTime > arrowTime + this.pieceDelay * i + 2000 && queue[0][4] != true) {
                         this.combo = 0;
                         this.changeText("MISS", this.combo, "#ff6961");
+                        this.changeSideBar(this.playerNum, this.score, this.combo);
                     }
                     queue.shift();
                     hold = undefined;

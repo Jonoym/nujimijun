@@ -121,7 +121,7 @@ io.on("connection", socket => {
         }
         console.log(connections);
         console.log(names);
-        if (startGame && numReady > 1) {
+        if (startGame/** && numReady > 1*/) {
             console.log("START");
             socket.broadcast.emit("startGame");
             socket.emit("startGame");
