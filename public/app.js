@@ -56,19 +56,19 @@ class Controller {
      * @param {*} event the key code of the key pressed
      */
     handlePress(event) {
-        if (event.keyCode === 97) {
+        if (event.keyCode === 97 || event.keyCode === 78) {
             this.bottomLeftPress();
         }
-        if (event.keyCode === 103) {
+        if (event.keyCode === 103 || event.keyCode === 85) {
             this.topLeftPress();
         }
-        if (event.keyCode === 101) {
+        if (event.keyCode === 101 || event.keyCode === 74) {
             this.middlePress();
         }
-        if (event.keyCode === 105) {
+        if (event.keyCode === 105 || event.keyCode === 73) {
             this.topRightPress();
         }
-        if (event.keyCode === 99) {
+        if (event.keyCode === 99 || event.keyCode === 77) {
             this.bottomRightPress();
         }
         if (this.loadingScreen === true) {
@@ -182,19 +182,19 @@ class Controller {
      * @param {*} event the key code of the key released
      */
     handleRelease(event) {
-        if (event.keyCode === 97) {
+        if (event.keyCode === 97 || event.keyCode === 78) {
             this.bottomLeftRelease();
         }
-        if (event.keyCode === 103) {
+        if (event.keyCode === 103 || event.keyCode === 85) {
             this.topLeftRelease();
         }
-        if (event.keyCode === 101) {
+        if (event.keyCode === 101 || event.keyCode === 74) {
             this.middleRelease();
         }
-        if (event.keyCode === 105) {
+        if (event.keyCode === 105 || event.keyCode === 73) {
             this.topRightRelease();
         }
-        if (event.keyCode === 99) {
+        if (event.keyCode === 99 || event.keyCode === 77) {
             this.bottomRightRelease();
         }
     }
@@ -910,9 +910,11 @@ class Logic {
     }
 
     changeSideBar(number, score, combo) {
-        let player = `p${number + 1}`;
-        document.getElementById(player + "-combo").textContent = "x" + combo;
-        document.getElementById(player + "-score").textContent = score;
+        if (this.gameMode == 2) {
+            let player = `p${number + 1}`;
+            document.getElementById(player + "-combo").textContent = "x" + combo;
+            document.getElementById(player + "-score").textContent = score;
+        }
     }
 
     makeArrow(position) {
