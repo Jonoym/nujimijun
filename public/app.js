@@ -41,8 +41,10 @@ class Controller {
         document.getElementById("load").addEventListener('click', this.logic.loadGame.bind(this.logic));
         document.getElementById("single").addEventListener('click', this.logic.startSingle.bind(this.logic));
         document.getElementById("multi").addEventListener('click', this.logic.displayEnterName.bind(this.logic));
+        document.getElementById("controls-button").addEventListener('click', this.logic.displayControls.bind(this.logic));
         document.getElementById("lobby-back").addEventListener('click', this.logic.displayEnterName.bind(this.logic));
         document.getElementById("name-back").addEventListener('click', this.logic.displaySelect.bind(this.logic));
+        document.getElementById("controls-back").addEventListener('click', this.logic.displaySelect.bind(this.logic));
         document.getElementById("next").addEventListener('click', this.logic.displayLobby.bind(this.logic));
         document.getElementById("game-to-menu").addEventListener('click', this.logic.displaySelect.bind(this.logic));
         document.getElementById("game-to-settings").addEventListener('click', this.logic.displayLobby.bind(this.logic));
@@ -658,13 +660,23 @@ class Logic {
         this.playerNum = null;
     }
 
+    /** Displays the stage which shows the controls of the game.
+     */
+     displayControls() {
+        this.clearMenu();
+        let controls = document.getElementById("controls");
+        controls.style.opacity = 1;
+        controls.style.zIndex = 997;
+    }
+
     /** Displays the stage where the player is to select the type of gamemode they're playing */
     displaySelect() {
-        this.clearEnterName();
+        this.clearEnterName(); 
         this.clearStats();
+        this.clearControls();
         let menuScreen = document.getElementById("menuscreen");
         menuScreen.style.opacity = 1;
-        menuScreen.style.zIndex = 999;
+        menuScreen.style.zIndex = 997;
     }
 
     /** Moves the lobby stage out of view and sends it to the back */
@@ -698,6 +710,15 @@ class Logic {
         nameEnter.style.opacity = 0;
         setTimeout(() => {
             nameEnter.style.zIndex = 0;
+        }, 1000);
+    }
+
+    /** Moves the lobby stage out of view and sends it to the back */
+    clearControls() {        
+        let controls = document.getElementById("controls");
+        controls.style.opacity = 0;
+        setTimeout(() => {
+            controls.style.zIndex = 0;
         }, 1000);
     }
 
@@ -1167,4 +1188,4 @@ var map7 = "1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0
 var map8 = "1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n\n\n\n\n\n\n\n\n\n\n\n";
 const logic = new Logic();
 const controller = new Controller(logic);
-logic.setGame(map8, 240);
+logic.setGame(map3, 240);

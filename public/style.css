@@ -1,9 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Lexend+Mega&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Atomic+Age&display=swap');* {
+@import url('https://fonts.googleapis.com/css2?family=Atomic+Age&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Baumans&display=swap');
+
+* {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
-    font-family: 'Lexend Mega', sans-serif;
+    font-family: 'Baumans', cursive;
 }
 
 body {
@@ -34,10 +37,12 @@ body {
 
 /* Styling for the loading and waiting screen. */
 
-#loadscreen, #menuscreen, #lobby, #enter-name, #stats {
+#loadscreen, #menuscreen, #lobby, #enter-name, #stats, #controls {
     width: 100%;
     height: 100vh;
-    z-index: 999;
+    z-index: 0;
+
+    background: black;
 
     position: absolute;
     display: flex;
@@ -48,39 +53,100 @@ body {
     transition: all 1s ease;
 }
 
+#loadscreen {
+    z-index: 999;
+    opacity: 1;
+    height: 100vh;
+    width: 100vw;
+    flex-direction: column;
+}
+
 .waiting-text {
     position: relative;
     top: 30vh;
     color: #aaaaff;
-    animation: wait 2s infinite ease;
+    animation: load-2 2s ease forwards;
 }
 
-@keyframes wait {
+#loadscreen img {
+    position: absolute;
+    width: 45%;
+    top: 30%;
+    height: auto;
+    transition: all 1s ease;
+    opacity: 1;
+}
+
+#loadscreen #loading-text {
+    left: 0%;
+    z-index: 50;
+    top: 38%;
+    animation: slide-right 1s ease forwards;
+}
+
+#loadscreen #loading-arrow {
+    left: -3%;
+    width: 60%;
+    z-Index: 51;
+    opacity: 1;
+    animation: slide-left 1s ease forwards;
+}
+
+#loadscreen #loading-bar {
+    width: 60%;
+    top: 59%;
+    animation: load 2s ease forwards;
+}
+
+@keyframes slide-left {
     0% {
-        transform: translateY(0px);
-        text-shadow: 0px 0px 4px #aaaaff;
+        transform: translateX(0%);
+    }
+    100% {
+        transform: translateX(-38%);
+    }
+}
+
+@keyframes slide-right {
+    0% {
+        transform: translateX(0%);
+    }
+    100% {
+        transform: translateX(75%);
+    }
+}
+
+@keyframes load {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 0.8;
+    }
+}
+
+@keyframes load-2 {
+    0% {
+        opacity: 0;
     }
     50% {
-        transform: translateY(10px);
-        text-shadow: 0px 0px 2px white;
+        opacity: 0;
     }
-
     100% {
-        transform: translateY(0px);
-        text-shadow: 0px 0px 4px #aaaaff;
+        opacity: 0.8;
     }
 }
 
 #menuscreen {
     z-index: 998;
+    flex-direction: column;
 }
 
 #menuscreen button {
-    width: 100%;
-    height: 100%;
+    padding: 2% 5%;
     color: #9999ee;
     border: none;
-    font-size: 3rem;
+    font-size: 2.5rem;
     text-shadow: 0px 0px 5px #333333;
 
     background: rgb(255,255,255,0);
@@ -90,8 +156,43 @@ body {
 }
 
 #menuscreen button:hover {
-    background: rgb(255,255,255,0.1);
     color: #40e0d0;
+}
+
+#menuscreen .game-types {
+    width: 100%;
+    height: 65%;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+#menuscreen .game-types button {
+    font-size: 4rem;
+}
+
+#menuscreen .extras {
+    height: 20%;
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+#menuscreen .extras button {
+    width: 300px;
+}
+
+#controls {
+    z-index: 0;
+    opacity: 0;
+}
+
+#controls img {
+    position: absolute;
+    max-width: 70%;
+    top: 15%;
+    opacity: 0.8;
 }
 
 #enter-name {
@@ -273,7 +374,7 @@ body {
 }
 
 .back:hover {
-    color: #40e0d0;
+    color: #30aaaa;
 }
 
 #game {
@@ -512,7 +613,23 @@ body {
     color: #aaaaff;
     text-shadow: 5px 5px 30px #555555;
     
-    animation: wait 5s infinite ease;
+    animation: hover 5s infinite ease;
+}
+
+@keyframes hover {
+    0% {
+        transform: translateY(0px);
+        text-shadow: 0px 0px 4px #aaaaff;
+    }
+    50% {
+        transform: translateY(10px);
+        text-shadow: 0px 0px 2px white;
+    }
+
+    100% {
+        transform: translateY(0px);
+        text-shadow: 0px 0px 4px #aaaaff;
+    }
 }
 
 #stats .container {

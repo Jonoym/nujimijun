@@ -37,18 +37,37 @@
     <div id="wallpaper">
         <img src="./assets/wallpaper.jpg" alt="" class="background" id="wallpaper-image">
     </div>
+
     <section id="loadscreen" class="black">
         <div class="waiting-text">PRESS ANY KEY TO START</div>
+        <img src="./assets/loading arrow.png" alt="" id="loading-arrow">
+        <img src="./assets/loading text.png" alt="" id="loading-text">
+        <img src="./assets/loading bar.png" alt="" id="loading-bar">
     </section>
+
     <section id="menuscreen">
-        <button id="single">SINGLE</button>
-        <button id="multi">MULTI</button>
+        <div class="game-types">
+            <button id="single">SINGLEPLAYER</button>
+            <button id="multi">MULTIPLAYER</button>
+        </div>
+        <div class="extras">
+            <button id="controls-button">CONTROLS</button>
+            <button id="contact">CONTACT</button>
+            <button id="about">ABOUT</button>
+        </div>
     </section>
+
+    <section id="controls">
+        <button class="back" id="controls-back">BACK</button>
+        <img src="./assets/controls.png" alt="">
+    </section>
+    
     <section id="enter-name"> 
         <button class="back" id="name-back">BACK</button>
         <input id="name-input" type="text" placeholder="ENTER NAME" spellcheck="false">
         <button id="next">NEXT</button>
     </section>
+
     <section id="lobby">
         <button class="back" id="lobby-back">BACK</button>
         <div id="song-select">
@@ -96,6 +115,7 @@
             </div>
         </div>
     </section>
+
     <section id="game">
         <div class="menu">
             <button id="start">START</button>
@@ -144,6 +164,7 @@
             </div>
         </div>
     </section>
+
     <section id="stats">
         <div class="container">
             <h1 id="grade">A</h1>
@@ -164,7 +185,9 @@
             <button id="game-to-play-again">PLAY AGAIN</button>
         </div>
     </section>
-    <script src="/socket.io/socket.io.js"></script>
+
+    <!-- <script src="/socket.io/socket.io.js"></script> -->
     <script src="app.js" defer></script>
+    <!-- Hello-->
 </body>
 </html>
