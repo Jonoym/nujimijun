@@ -38,14 +38,22 @@ class Controller {
 
         /** Instantiates the elements for all the buttons to change screens */
         document.getElementById("start").addEventListener('click', this.logic.startGame.bind(this.logic));
-        document.getElementById("load").addEventListener('click', this.logic.loadGame.bind(this.logic));
-        document.getElementById("single").addEventListener('click', this.logic.startSingle.bind(this.logic));
+        document.getElementById("single").addEventListener('click', this.logic.displaySelectSingle.bind(this.logic));
+        document.getElementById("single-start").addEventListener('click', this.logic.startSingle.bind(this.logic));
         document.getElementById("multi").addEventListener('click', this.logic.displayEnterName.bind(this.logic));
         document.getElementById("controls-button").addEventListener('click', this.logic.displayControls.bind(this.logic));
+
         document.getElementById("lobby-back").addEventListener('click', this.logic.displayEnterName.bind(this.logic));
         document.getElementById("name-back").addEventListener('click', this.logic.displaySelect.bind(this.logic));
         document.getElementById("controls-back").addEventListener('click', this.logic.displaySelect.bind(this.logic));
+
+        document.getElementById("single-select-back").addEventListener('click', this.logic.displaySelect.bind(this.logic));
+        document.getElementById("left-button-single").addEventListener('click', this.logic.prevSongLeft.bind(this.logic));
+        document.getElementById("right-button-single").addEventListener('click', this.logic.nextSongRight.bind(this.logic));
+
+
         document.getElementById("next").addEventListener('click', this.logic.displayLobby.bind(this.logic));
+
         document.getElementById("game-to-menu").addEventListener('click', this.logic.displaySelect.bind(this.logic));
         document.getElementById("game-to-settings").addEventListener('click', this.logic.displayLobby.bind(this.logic));
         document.getElementById("game-to-song-select").addEventListener('click', this.logic.displayLobby.bind(this.logic));
@@ -341,6 +349,11 @@ class Logic {
         this.comboNumber = document.getElementById("combo-number");
         this.comboText = document.getElementById("combo-text");
 
+        /** Singleplayer Cards */
+        this.leftCardSingle = document.getElementById("left-card-single");
+        this.middleCardSingle = document.getElementById("middle-card-single");
+        this.rightCardSingle = document.getElementById("right-card-single");
+
         /** Stores the players current score and combo */
         this.combo = 0;
         this.score = 0;
@@ -350,6 +363,15 @@ class Logic {
         this.missCount = 0;
         this.maxCombo = 0;
 
+        /** Songs stored in String Format. */
+        this.songList = ["1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n\n\n\n\n\n\n\n\n\n\n",
+                        "1,2 0\n1,2 0\n 0\n4,5 0\n3,5 0\n1,5 0\n2,3 0\n3 0\n4 0\n5 0\n1,2 0\n2,3 0\n3 0\n4 0\n5,1 0\n1,5 0\n2,4 0\n3 0\n4,2 0\n5,1 0\n1,5 0\n2 0\n3 0\n4,2 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n\n\n\n\n\n\n\n\n\n\n",
+                        "1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n\n\n\n\n\n\n\n\n\n\n\n\n",
+                        "1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n\n\n\n\n\n\n\n\n\n\n\n"
+                        ];
+        this.currentSong = 0;
+        this.setGame(this.songList[this.currentSong], 240);
+        
     }
 
     /**
@@ -377,7 +399,66 @@ class Logic {
 
     /** Creates a new game with the track and bpm that is stroed in the logic */
     loadGame() {
+        this.setGame(this.songList[this.currentSong], 240);
         this.game = new Game(this.track, this.bpm);
+    }
+
+    /** Selects the next song in the song list. */
+    nextSongRight() {
+        console.log("pressed");
+        this.currentSong = (this.currentSong + 1) % this.songList.length;
+
+        this.rightCardSingle.style.transition = "all 0.2s ease";
+        this.rightCardSingle.style.transform = "scale(1.2) translateX(0)";
+        this.rightCardSingle.style.zIndex = 13;
+
+        this.middleCardSingle.style.transition = "all 0.2s ease";
+        this.middleCardSingle.style.transform = "scale(1) translateX(-15vw)";
+        this.middleCardSingle.style.zIndex = 10;
+
+        this.leftCardSingle.style.transition = "all 0.2s ease";
+        this.leftCardSingle.style.transform = "translateX(15vw)";
+        this.leftCardSingle.style.zIndex = 10; 
+
+        setTimeout(() => {
+            this.resetCards();
+        }, 200);
+    }
+
+    /** Selects the previous song in the song list. */
+    prevSongLeft() {
+        this.currentSong = (this.currentSong + this.songList.length - 1) % this.songList.length;
+
+        this.leftCardSingle.style.transition = "all 0.2s ease";
+        this.leftCardSingle.style.transform = "scale(1.2) translateX(0)";
+        this.leftCardSingle.style.zIndex = 13;
+
+        this.middleCardSingle.style.transition = "all 0.2s ease";
+        this.middleCardSingle.style.transform = "scale(1) translateX(15vw)";
+        this.middleCardSingle.style.zIndex = 10;
+
+        this.rightCardSingle.style.transition = "all 0.2s ease";
+        this.rightCardSingle.style.transform = "translateX(-15vw)";
+        this.rightCardSingle.style.zIndex = 10;
+
+        setTimeout(() => {
+            this.resetCards();
+        }, 200);
+    }
+    
+    resetCards() {
+        this.leftCardSingle.style.transition = "all 0s ease";
+        this.leftCardSingle.style.transform = "scale(1) translateX(-15vw)";
+        this.leftCardSingle.style.zIndex = 10;
+
+        this.middleCardSingle.style.transition = "all 0s ease";
+        this.middleCardSingle.style.transform = "scale(1.2) translateX(0vw)";
+        this.middleCardSingle.style.zIndex = 13;
+
+        this.rightCardSingle.style.transition = "all 0s ease";
+        this.rightCardSingle.style.transform = "scale(1) translateX(15vw)";
+        this.rightCardSingle.style.zIndex = 10;
+
     }
 
     /** Starts a singleplayer game */
@@ -401,11 +482,9 @@ class Logic {
 
     /** Functions below are mostly to handle multiplayer transmissions between the server
      * and the local player.
-     */
 
     /** Changes the gamemode stored to a multiplayer game and instantiates the multiplayer
      *  socket object to handle the requests and emissions between the server.
-     */
     joinMulti() {
         this.gameMode = 2;
         this.socket = io();
@@ -455,11 +534,15 @@ class Logic {
             this.multiplayerGame();
         } )
     }
+    
+    */
 
     /** Displays the gameboard */
     displayGame() {
         this.resetStats();
         this.clearStats();
+        this.loadGame();
+        this.clearSelectSingle();
         let gameboard = document.getElementById("game");
         gameboard.style.opacity = 1;
         gameboard.style.zIndex = 998;
@@ -674,10 +757,21 @@ class Logic {
         this.clearEnterName(); 
         this.clearStats();
         this.clearControls();
+        this.clearSelectSingle();
         let menuScreen = document.getElementById("menuscreen");
         menuScreen.style.opacity = 1;
         menuScreen.style.zIndex = 997;
     }
+
+    /** Displays the stage where the player is to select the song they're playing */
+    displaySelectSingle() {
+        this.clearMenu();
+        this.clearGame();
+        let select = document.getElementById("song-select-single");
+        select.style.opacity = 1;
+        select.style.zIndex = 997;
+    }
+
 
     /** Moves the lobby stage out of view and sends it to the back */
     clearLobby() {
@@ -721,6 +815,16 @@ class Logic {
             controls.style.zIndex = 0;
         }, 1000);
     }
+
+    /** Moves the select stage out of view and sends it to the back */
+    clearSelectSingle() {        
+        let select = document.getElementById("song-select-single");
+        select.style.opacity = 0;
+        setTimeout(() => {
+            select.style.zIndex = 0;
+        }, 1000);
+    }
+
 
     /** Functions below are to handle the game functionality on the local side */
 
@@ -1171,21 +1275,5 @@ class TimeFrame {
     }
 }
 
-var map1 = "1,2 \n3,2 1\n3,5 1\n2 0\n5 0\n1 0\n2,4 0\n 0\n1,2 0\n1,5 0\n2,4 0";
-
-var map2 = "1,2,3,4,5 -1\n1,2,3,4,5 -1\n1,2,3,4,5 -1\n1,2,3,4,5 -1\n1,2,3,4,5 -1\n1,2,3,4,5 -1\n";
-
-var map3 = "1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n";
-
-var map4 = "1,5 0\n3 0\n3 0\n2 0\n\n2 0\n3 0\n1 0\n3 0\n2 0\n4 0\n3 0\n5 0\n3 0\n4 0\n2 0\n3 1\n2 0\n5 0\n3 0\n";
-
-var map5 = "\n\n\n\n\n\n\n1,2 6\n3 1\n4 2\n"
-
-var map6 = "1,2 0\n1,2 0\n4,5 0\n3,4 0\n1,2 0\n1,2 0\n4,5 0\n3,4 0\n1,2 0\n1,2 0\n4,5 0\n3,4 0\n1,2 0\n1,2 0\n4,5 0\n3,4 0\n1,2 0\n1,2 0\n4,5 0\n3,4 0\n"
-
-var map7 = "1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n1,2 0\n";
-
-var map8 = "1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n\n\n\n\n\n\n\n\n\n\n\n";
 const logic = new Logic();
 const controller = new Controller(logic);
-logic.setGame(map3, 240);
