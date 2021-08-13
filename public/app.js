@@ -276,8 +276,10 @@ class Controller {
      * @param {*} white element that has been changed
      */
     arrowRelease(position, white) {
+        setTimeout(() => {
+            white.style.opacity = 0;
+        }, 100);
         position.style.boxShadow = "none";
-        white.style.opacity = 0;
         const background = document.getElementById("wallpaper");
         background.style.opacity = 0.6;
         background.style.transform = "scale(1)";
@@ -402,7 +404,7 @@ class Logic {
     }
 
     /** Selects the next song in the song list. */
-    nextSongRight() {
+    nextSongRight() { 
         this.currentSong = (this.currentSong + 1) % this.songList.length;
 
         this.rightCardSingle.style.transition = "all 0.2s ease";
