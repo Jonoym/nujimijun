@@ -364,14 +364,13 @@ class Logic {
         this.maxCombo = 0;
 
         /** Songs stored in String Format. */
-        this.songList = ["1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n\n\n\n\n\n\n\n\n\n\n",
-                        "1,2 0\n1,2 0\n 0\n4,5 0\n3,5 0\n1,5 0\n2,3 0\n3 0\n4 0\n5 0\n1,2 0\n2,3 0\n3 0\n4 0\n5,1 0\n1,5 0\n2,4 0\n3 0\n4,2 0\n5,1 0\n1,5 0\n2 0\n3 0\n4,2 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n\n\n\n\n\n\n\n\n\n\n",
-                        "1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n\n\n\n\n\n\n\n\n\n\n\n\n",
-                        "1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n\n\n\n\n\n\n\n\n\n\n\n"
+        this.songList = [["Map 1", "1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n\n\n\n\n\n\n\n\n\n\n"],
+                        ["Map 2", "1,2 0\n1,2 0\n 0\n4,5 0\n3,5 0\n1,5 0\n2,3 0\n3 0\n4 0\n5 0\n1,2 0\n2,3 0\n3 0\n4 0\n5,1 0\n1,5 0\n2,4 0\n3 0\n4,2 0\n5,1 0\n1,5 0\n2 0\n3 0\n4,2 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n\n\n\n\n\n\n\n\n\n\n"],
+                        ["Map 3", "1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n\n\n\n\n\n\n\n\n\n\n\n\n"],
+                        ["Map 4", "1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n\n\n\n\n\n\n\n\n\n\n\n"]
                         ];
         this.currentSong = 0;
-        this.setGame(this.songList[this.currentSong], 240);
-        
+        this.updateCards();
     }
 
     /**
@@ -399,13 +398,11 @@ class Logic {
 
     /** Creates a new game with the track and bpm that is stroed in the logic */
     loadGame() {
-        this.setGame(this.songList[this.currentSong], 240);
-        this.game = new Game(this.track, this.bpm);
+        this.setGame(this.songList[this.currentSong][1], 240);
     }
 
     /** Selects the next song in the song list. */
     nextSongRight() {
-        console.log("pressed");
         this.currentSong = (this.currentSong + 1) % this.songList.length;
 
         this.rightCardSingle.style.transition = "all 0.2s ease";
@@ -422,6 +419,7 @@ class Logic {
 
         setTimeout(() => {
             this.resetCards();
+            this.updateCards();
         }, 200);
     }
 
@@ -443,6 +441,7 @@ class Logic {
 
         setTimeout(() => {
             this.resetCards();
+            this.updateCards();
         }, 200);
     }
     
@@ -458,7 +457,13 @@ class Logic {
         this.rightCardSingle.style.transition = "all 0s ease";
         this.rightCardSingle.style.transform = "scale(1) translateX(15vw)";
         this.rightCardSingle.style.zIndex = 10;
+    }
 
+    updateCards() {
+        let current = this.currentSong;
+        this.leftCardSingle.textContent = this.songList[(current + this.songList.length - 1) % this.songList.length][0];
+        this.middleCardSingle.textContent = this.songList[current][0];
+        this.rightCardSingle.textContent = this.songList[(current + 1) % this.songList.length][0];
     }
 
     /** Starts a singleplayer game */

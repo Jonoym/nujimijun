@@ -226,6 +226,9 @@ body {
     cursor: pointer;
 
     transition: all 0.5s ease;
+
+    font-size: 2rem;
+    justify-content: center;
 }
 
 #left-card-single, #right-card-single, #middle-card-single {
