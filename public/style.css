@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Lexend+Mega&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Atomic+Age&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Baumans&display=swap');
 
 * {
@@ -8,6 +7,10 @@
     box-sizing: border-box;
     font-family: 'Baumans', cursive;
 }
+
+/* * {
+    outline: 1px solid #f00 !important;
+  } */
 
 body {
     background: black;
@@ -715,9 +718,7 @@ body {
     z-index: 0;
     opacity: 0;
     display: flex;
-    flex-direction: column;
-    background: transparent;
-}
+    flex-direction: column;}
 
 #stats .buttons {
     width: 100%;
@@ -727,12 +728,14 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    position: absolute;
+    top: 70%;
 }
 
 #stats .buttons button {
-    height: 20%;
+    height: 50%;
 
-    font-size: 2rem;
+    font-size: 2.5rem;
     color: #30aaaa;
     background: none;
     border: none;
@@ -746,10 +749,9 @@ body {
 }
 
 #stats #grade {
-    font-size: 20rem;
+    font-size: 25rem;
     text-emphasis: bold;
-    font-family: "Atomic Age", cursive;
-    margin-right: 10%;
+    margin-right: 5%;
     margin-left: 5%;
     color: #aaaaff;
     text-shadow: 5px 5px 30px #555555;
@@ -773,48 +775,72 @@ body {
     }
 }
 
+#stats .song-header {
+    width: 85vw;
+    
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+    position: absolute;
+    top: 5%;
+    color: #aaaaaa;
+}
+
+#stats .song-header h1 {
+    font-size: 5rem;
+}
+
+#stats .song-header  h3 {
+    font-size: 3rem;
+}
+
 #stats .container {
-    width: 65vw;
+    width: 75vw;
     height: 55vh;
     
     justify-content: center;
     align-items: center;
     display: flex;
     border-radius: 10px;
+    position: absolute;
+    top: 20%;
 }
 
 #stats .stat-info {
     height: 100%;
-    width: 70%;
+    width: 80%;
     margin: 50px 0;
 
     justify-content: center;
     display: flex;
     flex-direction: column;
+    text-shadow: none;
 }
 
 #stats .stat-info h2 {
     width: 100%;
-    font-size: 2.3rem;
+    font-size: 3rem;
     color: white;
     margin-top: 10px;
     justify-content: space-between;
     display: flex;
-    border-bottom: 5px solid #333333;
-    border-radius: 3px;
-    padding: 10px;
+    border-radius: 2px;
+    background: #444444;
+    padding: 15px;
 }
 
 #stats .stat-info h3 {
-    width: 100%;
+    left: 5%;
+    position: relative;
+    width: 95%;
     color: white;
-    font-size: 1.5rem;
-    margin-top: 10px;
+    font-size: 1.8rem;
+    margin-top: 20px;
     padding: 10px;
-    border-radius: 3px;
+    border-radius: 2px;
     justify-content: space-between;
     display: flex;
-    border-bottom: 5px solid #333333;
+    background: #444444;
 }
 
 .perfect {
@@ -834,5 +860,5 @@ body {
 }
 
 .combo {
-    color: grey;
+    color: #aaaaaa;
 }
