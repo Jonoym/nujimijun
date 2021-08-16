@@ -208,8 +208,8 @@ body {
 }
 
 #song-select-single .songs {
-    top: 5%;
-    position: relative;
+    top: -5%;
+    position: absolute;
     width: 100%;
     height: 100%;
 
@@ -327,6 +327,9 @@ body {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
+    position: absolute;
+    top: 72.5%;
+
 }
 
 #song-select-single .extras button {
@@ -515,6 +518,7 @@ body {
     border: none;
 
     transition: all 0.5s ease;
+    z-index: 999;
 }
 
 .back:hover {
@@ -526,28 +530,58 @@ body {
     height: 100vh;
 
     justify-content: center;
-    align-items: center;
     display: flex;
     position: absolute;
-    overflow: hidden;
-    opacity: 0;
-    z-index: 0;
 
     transition: all 1s ease;
 }
 
 #game .container {
     width: 425px;
+    height: 100%;
     position: absolute;
+    overflow: hidden;
+}
+
+#game .healthbar {
+    position: absolute;
+    margin-top: 10px;
+
+    display: flex;
+}
+
+#game .healthbar img {
+    width: 425px;
+    height: auto;
+    position: absolute;
+}
+
+#game .healthbar .health-frame {
+    z-index: 10;
+}
+
+#game .healthbar #health, #game .healthbar #health-mask{
+    margin-top: 4px;
+    margin-left: 4px;
+    width: 417px;
+}
+
+.healthbar #health-mask {
+    z-index: 9;
+    transform: translateX(3%);
+    transition: all 1s ease;
+}
+
+.healthbar:hover #health-mask {
+    transform: translateX(100%);
 }
 
 #gameboard {
     position: absolute;
-    top: -40vh;
-    height: 98vh;
+    height: 100%;
     width: 100%;
     background: rgb(0,0,0,0.4);
-    border-top: 10px solid rgb(0,0,0,0.1);
+    border-top: 50px solid rgb(0,0,0,0.1);
 
     display: flex;
     overflow: hidden;
@@ -557,8 +591,6 @@ body {
     width: 80px;
     height: 80px;
     margin: 2px;
-    transition: all 0.1s ease;
-    box-shadow: none;
     opacity: 1;
 
     display: flex;

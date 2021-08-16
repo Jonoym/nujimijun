@@ -38,14 +38,19 @@ class Controller {
 
         /** Instantiates the elements for all the buttons to change screens */
         document.getElementById("start").addEventListener('click', this.logic.startGame.bind(this.logic));
+
+        /** Chooses to start a single game, displays the song selection page */
         document.getElementById("single").addEventListener('click', this.logic.displaySelectSingle.bind(this.logic));
+
+        /** Starts a singleplayer game */
         document.getElementById("single-start").addEventListener('click', this.logic.startSingle.bind(this.logic));
         document.getElementById("multi").addEventListener('click', this.logic.displayEnterName.bind(this.logic));
         document.getElementById("controls-button").addEventListener('click', this.logic.displayControls.bind(this.logic));
 
-        document.getElementById("lobby-back").addEventListener('click', this.logic.displayEnterName.bind(this.logic));
+        document.getElementById("lobby-back").addEventListener('click', this.logic.displaySelect.bind(this.logic));
         document.getElementById("name-back").addEventListener('click', this.logic.displaySelect.bind(this.logic));
-        document.getElementById("controls-back").addEventListener('click', this.logic.displaySelect.bind(this.logic));
+        document.getElementById("controls-back").addEventListener('click', this.logic.displayPrevious.bind(this.logic));
+        document.getElementById("single-select-controls").addEventListener('click', this.logic.displayControls.bind(this.logic));
 
         document.getElementById("single-select-back").addEventListener('click', this.logic.displaySelect.bind(this.logic));
         document.getElementById("left-button-single").addEventListener('click', this.logic.prevSongLeft.bind(this.logic));
@@ -54,10 +59,10 @@ class Controller {
 
         document.getElementById("next").addEventListener('click', this.logic.displayLobby.bind(this.logic));
 
-        document.getElementById("game-to-menu").addEventListener('click', this.logic.displaySelect.bind(this.logic));
-        document.getElementById("game-to-settings").addEventListener('click', this.logic.displayLobby.bind(this.logic));
-        document.getElementById("game-to-song-select").addEventListener('click', this.logic.displayLobby.bind(this.logic));
-        document.getElementById("game-to-play-again").addEventListener('click', this.logic.startSingle.bind(this.logic));
+        document.getElementById("single-stats-to-menu").addEventListener('click', this.logic.displaySelect.bind(this.logic));
+        document.getElementById("single-stats-to-settings").addEventListener('click', this.logic.displayLobby.bind(this.logic));
+        document.getElementById("single-stats-to-song-select").addEventListener('click', this.logic.displaySelectSingle.bind(this.logic));
+        document.getElementById("single-stats-to-play-again").addEventListener('click', this.logic.startSingle.bind(this.logic));
     }
 
     /**
@@ -356,6 +361,9 @@ class Logic {
         this.middleCardSingle = document.getElementById("middle-card-single");
         this.rightCardSingle = document.getElementById("right-card-single");
 
+        /** Sets previous page */
+        this.previousPage = document.getElementById("menuscreen");
+
         /** Stores the players current score and combo */
         this.combo = 0;
         this.score = 0;
@@ -487,74 +495,6 @@ class Logic {
         this.clearMenu();
     }
 
-    /** Functions below are mostly to handle multiplayer transmissions between the server
-     * and the local player.
-
-    /** Changes the gamemode stored to a multiplayer game and instantiates the multiplayer
-     *  socket object to handle the requests and emissions between the server.
-    joinMulti() {
-        this.gameMode = 2;
-        this.socket = io();
-
-        //Handles the emit from the server, passing in the player number relative to the lobby
-        this.socket.on('playerNumber', number => {
-            //If -1 is returned, then there are no spaces in the lobby
-            if (number === -1) {
-                console.log("Server is full");
-            } else {
-                this.currentPlayer(number, document.getElementById("name-input").value);
-            }
-        })
-
-        //Handles the emit from the server for when a player has connected to the lobby
-        this.socket.on("playerConnection", number => {
-            console.log(`Player ${number} has connected`);
-            this.playerConnect(number);
-        });
-
-        //Handles the emit from the server to provide the name of the player
-        this.socket.on("playerName", (number, name) => {
-            this.playerName(number, name);
-        })
-
-        //Handles the emit from the server for when a player has disconnected to the lobby
-        this.socket.on("playerDisconnect", number => {
-            console.log(`Player ${number} has disconnected`);
-            this.playerDisconnect(number);
-        });
-
-        //Handles the emit from the server when an enemy is ready
-        this.socket.on("enemyReady", number => {
-            this.playersReady[number] = true;
-            this.playerReady(number);
-        })
-
-        //Handles the emit from the server when an enemy is not ready
-        this.socket.on("enemyUnready", number => {
-            this.playersReady[number] = false;
-            this.playerUnready(number);
-        })
-
-        this.socket.on("startGame", () => {
-            this.movePlayerList();
-            this.displayGame();
-            this.multiplayerGame();
-        } )
-    }
-    
-    */
-
-    /** Displays the gameboard */
-    displayGame() {
-        this.resetStats();
-        this.clearStats();
-        this.loadGame();
-        this.clearSelectSingle();
-        let gameboard = document.getElementById("game");
-        gameboard.style.opacity = 1;
-        gameboard.style.zIndex = 998;
-    }
-
     /** Resets the game stats */
     resetStats() {
         this.combo = 0;
@@ -567,16 +507,18 @@ class Logic {
     }
 
     /** Displays the gameboard */
-    clearGame() {
+    displayGame() {
+        this.clearAll();
+        this.loadGame();
+        this.resetStats();
         let gameboard = document.getElementById("game");
-        gameboard.style.opacity = 0;
-        gameboard.style.zIndex = 0;
+        gameboard.style.opacity = 1;
+        gameboard.style.zIndex = 998;
     }
     
     /** Displays the stat at the end of a game. */
     displayStats() {
-        this.clearGame();
-        this.clearLobby();
+        this.clearAll();
         let gameboard = document.getElementById("stats");
         gameboard.style.opacity = 1;
         gameboard.style.zIndex = 999;
@@ -588,147 +530,11 @@ class Logic {
         document.getElementById("max-combo").textContent = this.maxCombo;
     }
 
-    /** Clears the game stats display. */
-    clearStats() {
-        let gameboard = document.getElementById("stats");
-        gameboard.style.opacity = 0;
-        gameboard.style.zIndex = 0;
-    }
-
-    //Make the click-ready disappear
-
-    /**
-     * When the local player joins the lobby.
-     * 
-     * @param {*} number the player number 
-     * @param {*} name name of the player joining
-     */
-    currentPlayer(number, name) {
-        this.callMultiReady = () => {
-            this.multiReady();
-        };
-
-        let player = `p${parseInt(number) + 1}`;
-        this.playerNum = parseInt(number);
-
-        //Changes the interface of the lobby when a player joins to the current player
-        document.getElementById(player).classList.add("current-player");
-        document.getElementById(player + "-name").textContent = name;
-        document.getElementById(player + "-connected").style.color = "rgb(3, 153, 3)";
-        document.getElementById(player + "-click-ready").style.opacity = "1";
-        document.getElementById(player).style.transform = "translateX(0%)";
-        document.getElementById(player).addEventListener('click', this.callMultiReady);
-
-        this.socket.emit("playerName", this.playerNum, name);
-    }
-
-    /** The function that is bound to the ready button in the lobby */
-    multiReady() {
-        this.ready = !this.ready;
-        if (this.ready) {
-            this.playerReady(this.playerNum);
-            this.socket.emit("playerReady", this.playerNum);
-        } else {
-            this.playerUnready(this.playerNum);
-            this.socket.emit("playerUnready", this.playerNum);
-        }
-    }
-
-    /**
-     * Changes the lobby interface to correctly represent the ready states of the players
-     * 
-     * @param {*} number the player that is now ready
-     */
-    playerReady(number) {
-        let player = `p${parseInt(number) + 1}`;
-        document.getElementById(player + "-ready").style.color = "rgb(3, 153, 3)";
-        document.getElementById(player + "-click-ready").style.opacity = "0";
-    }
-
-    /**
-     * Changes the lobby interface to correctly display the names of players
-     * 
-     * @param {*} number the player number
-     * @param {*} name the name of the connected player
-     */
-    playerName(number, name) {
-        let player = `p${parseInt(number) + 1}`;
-        document.getElementById(player + "-name").textContent = name;
-    }
-
-    /**
-     * Changes the lobby interface to correctly represent the ready states of the players
-     * 
-     * @param {*} number the player that is no longer ready
-     */
-    playerUnready(number) {
-        let player = `p${parseInt(number) + 1}`;
-        document.getElementById(player + "-ready").style.color = "rgb(135, 21, 21)";
-        if (number === this.playerNum) {
-            document.getElementById(player + "-click-ready").style.opacity = "1";
-        }
-    }
-
-    /**
-     * Changes the lobby interface when a player has connected
-     * 
-     * @param {*} number the number of the player that has connected
-     */
-    playerConnect(number) {
-        let player = `p${parseInt(number) + 1}`;
-        document.getElementById(player).style.transform = "translateX(0%)";
-        if (parseInt(number) == this.playerNum) {
-            document.getElementById(player).classList.add("current-player");
-        }
-    }
-
-    /**
-     * Changes the lobby interface when a player has disconnected
-     * 
-     * @param {*} number the number of the player that has disconnected
-     */
-    playerDisconnect(number) {
-        let player = `p${parseInt(number) + 1}`;
-        document.getElementById(player + "-ready").style.color = "rgb(135, 21, 21)";
-        document.getElementById(player).style.transform = "translateX(100%)";
-        document.getElementById(player + "-name").textContent = " ";
-        if (parseInt(number) == this.playerNum) {
-            document.getElementById(player).classList.remove("current-player");
-        }
-    }
-
-    /** Functions in the logic class that are used to update the current stage of the game */
-
-    /** Clears the menu by moving it to the back and changing the opacity to 0 */
-    clearMenu() {
-        let menuScreen = document.getElementById("menuscreen");
-        menuScreen.style.opacity = 0;
-        setTimeout(() => {
-            menuScreen.style.zIndex = 0;
-        }, 1000);
-    }
-
-    /** When the local player has left the lobby, it will emit that to the server */
-    leaveLobby() {
-        this.playerDisconnect(this.playerNum);
-        console.log("Player has left the lobby");
-        let player = `p${this.playerNum + 1}`;
-        document.getElementById(player).removeEventListener('click', this.callMultiReady);
-        document.getElementById(player + "-click-ready").style.opacity = "0";
-        this.ready = false;
-        this.socket.emit("leaveLobby", this.playerNum); 
-    }
-
     /** Displays the view of the lobby, if this is the first time connecting, a socket
      *  is instantiated, if not, then the number of the player is received.
      */
-    displayLobby() {
-        if (this.socket == undefined) {
-            this.joinMulti();
-        } else {
-            this.socket.emit("getNumber", document.getElementById("name-input").value);
-        }
-        this.clearEnterName();
+     displayLobby() {
+        this.clearAll();
         let lobbyScreen = document.getElementById("lobby");
         lobbyScreen.style.opacity = 1;
         lobbyScreen.style.zIndex = 997;
@@ -738,8 +544,7 @@ class Logic {
      *  The previous screen is sent to the back and the player number is reset to null.
      */
     displayEnterName() {
-        this.clearLobby();
-        this.clearMenu();
+        this.clearAll();
         let enterName = document.getElementById("enter-name");
         enterName.style.opacity = 1;
         enterName.style.zIndex = 997;
@@ -753,7 +558,7 @@ class Logic {
     /** Displays the stage which shows the controls of the game.
      */
      displayControls() {
-        this.clearMenu();
+        this.clearAll();
         let controls = document.getElementById("controls");
         controls.style.opacity = 1;
         controls.style.zIndex = 997;
@@ -761,77 +566,116 @@ class Logic {
 
     /** Displays the stage where the player is to select the type of gamemode they're playing */
     displaySelect() {
-        this.clearEnterName(); 
-        this.clearStats();
-        this.clearControls();
-        this.clearSelectSingle();
+        this.clearAll();
         let menuScreen = document.getElementById("menuscreen");
         menuScreen.style.opacity = 1;
         menuScreen.style.zIndex = 997;
+        this.previousPage = menuScreen;
     }
 
     /** Displays the stage where the player is to select the song they're playing */
     displaySelectSingle() {
-        this.clearMenu();
-        this.clearGame();
+        this.clearAll();
         let select = document.getElementById("song-select-single");
         select.style.opacity = 1;
         select.style.zIndex = 997;
+        this.previousPage = select;
     }
 
+    /** Displays the view of the lobby, if this is the first time connecting, a socket
+     *  is instantiated, if not, then the number of the player is received.
+     */
+    displayLobby() {
+        this.clearAll();
+        let lobbyScreen = document.getElementById("lobby");
+        lobbyScreen.style.opacity = 1;
+        lobbyScreen.style.zIndex = 997;
+    }
+
+    /** Displays the stage where the player is to enter their name.
+     *  The previous screen is sent to the back and the player number is reset to null.
+     */
+    displayEnterName() {
+        this.clearAll();
+        let enterName = document.getElementById("enter-name");
+        enterName.style.opacity = 1;
+        enterName.style.zIndex = 997;
+        console.log(this.playerNum);
+        if (this.playerNum != undefined) {
+            this.leaveLobby();
+        }
+        this.playerNum = null;
+        this.previousPage = enterName;
+    }
+
+    /** Displays the page that was previously shown. */
+    displayPrevious() {
+        if (this.previousPage == document.getElementById("menuscreen")) {
+            this.displaySelect();
+        } else if (this.previousPage == document.getElementById("song-select-single")) {
+            this.displaySelectSingle();
+        }
+    }
+
+    /** Clears the game stats display. */
+    clearStats() {
+        let gameboard = document.getElementById("stats");
+        gameboard.style.opacity = 0;
+        gameboard.style.zIndex = 0;
+    }
+
+    /** Displays the gameboard */
+    clearGame() {
+        let gameboard = document.getElementById("game");
+        gameboard.style.opacity = 0;
+        gameboard.style.zIndex = 0;
+    }
+
+    /** Clears the menu by moving it to the back and changing the opacity to 0 */
+    clearMenu() {
+        let menuScreen = document.getElementById("menuscreen");
+        menuScreen.style.opacity = 0;
+        menuScreen.style.zIndex = 0;
+    }
 
     /** Moves the lobby stage out of view and sends it to the back */
     clearLobby() {
         let lobbyScreen = document.getElementById("lobby");
         lobbyScreen.style.opacity = 0;
-        setTimeout(() => {
-            lobbyScreen.style.zIndex = 0;
-        }, 1000);
-    }
-
-    movePlayerList() {
-        let lobbyScreen = document.getElementById("lobby");
-        let playerList = document.getElementById("player-list");
-        let player = `p${this.playerNum + 1}`;
-        lobbyScreen.style.background = "transparent";
-        playerList.style.transform = "translateX(50%)";
-        console.log(this.playerNum);
-        document.getElementById(player + "-combo").style.opacity = 1;
-        document.getElementById(player + "-score").style.opacity = 1;
-        document.getElementById(player + "-ready").style.opacity = 0;
-        document.getElementById(player + "-connected").style.opacity = 0;
-        playerList.style.width = "50%";
-        playerList.style.height = "50%";
-        lobbyScreen.style.zIndex = 999;
+        lobbyScreen.style.zIndex = 0;
     }
 
     /** Moves the lobby stage out of view and sends it to the back */
     clearEnterName() {        
         let nameEnter = document.getElementById("enter-name");
         nameEnter.style.opacity = 0;
-        setTimeout(() => {
-            nameEnter.style.zIndex = 0;
-        }, 1000);
+        nameEnter.style.zIndex = 0;
     }
 
     /** Moves the lobby stage out of view and sends it to the back */
     clearControls() {        
         let controls = document.getElementById("controls");
         controls.style.opacity = 0;
-        setTimeout(() => {
-            controls.style.zIndex = 0;
-        }, 1000);
+        controls.style.zIndex = 0;
     }
 
     /** Moves the select stage out of view and sends it to the back */
     clearSelectSingle() {        
         let select = document.getElementById("song-select-single");
         select.style.opacity = 0;
-        setTimeout(() => {
-            select.style.zIndex = 0;
-        }, 1000);
+        select.style.zIndex = 0;
     }
 
+    /** Clears all game screens. */
+    clearAll() {
+        this.clearGame();
+        this.clearStats();
+        this.clearEnterName();
+        this.clearLobby();
+        this.clearMenu();
+        this.clearSelectSingle();
+        this.clearControls();
+    }
 
     /** Functions below are to handle the game functionality on the local side */
 
@@ -924,9 +768,7 @@ class Logic {
         if (queue != undefined && queue[0][2] != true && held == false) {
             console.log(timeDifference);
             if (timeDifference < -50000) {
-                console.log("REACHED");
                 timeDifference += 60000;
-                console.log(timeDifference);
             }
 
             let displayText;
