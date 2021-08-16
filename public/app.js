@@ -361,12 +361,17 @@ class Logic {
         this.middleCardSingle = document.getElementById("middle-card-single");
         this.rightCardSingle = document.getElementById("right-card-single");
 
+        /** Element for the health mask. */
+        this.healthMask = document.getElementById("health-mask");
+
         /** Sets previous page */
         this.previousPage = document.getElementById("menuscreen");
 
         /** Stores the players current score and combo */
         this.combo = 0;
+        this.missCombo = 0;
         this.score = 0;
+        this.health = 100;
         this.perfectCount = 0;
         this.goodCount = 0;
         this.okayCount = 0;
@@ -381,6 +386,7 @@ class Logic {
                         ];
         this.currentSong = 0;
         this.updateCards();
+
     }
 
     /**
@@ -504,6 +510,8 @@ class Logic {
         this.okayCount = 0;
         this.missCount = 0;
         this.maxCombo = 0;
+        this.missCombo = 0;
+        this.health = 100;
     }
 
     /** Displays the gameboard */
@@ -511,6 +519,8 @@ class Logic {
         this.clearAll();
         this.loadGame();
         this.resetStats();
+        this.changeHealth();
+        this.health = 100;
         let gameboard = document.getElementById("game");
         gameboard.style.opacity = 1;
         gameboard.style.zIndex = 998;
@@ -548,7 +558,6 @@ class Logic {
         let enterName = document.getElementById("enter-name");
         enterName.style.opacity = 1;
         enterName.style.zIndex = 997;
-        console.log(this.playerNum);
         if (this.playerNum != undefined) {
             this.leaveLobby();
         }
@@ -600,7 +609,6 @@ class Logic {
         let enterName = document.getElementById("enter-name");
         enterName.style.opacity = 1;
         enterName.style.zIndex = 997;
-        console.log(this.playerNum);
         if (this.playerNum != undefined) {
             this.leaveLobby();
         }
@@ -766,7 +774,6 @@ class Logic {
         
     
         if (queue != undefined && queue[0][2] != true && held == false) {
-            console.log(timeDifference);
             if (timeDifference < -50000) {
                 timeDifference += 60000;
             }
@@ -791,11 +798,13 @@ class Logic {
             }
             
             this.combo++;
+            this.missCombo = 0;
             if (this.combo > this.maxCombo) {
                 this.maxCombo = this.combo;
             }
             this.changeText(displayText, this.combo, colour);
             this.addScore(displayText);
+            this.changeHealth(displayText);
             this.changeSideBar(this.playerNum, this.score, this.combo);
             queue[0][0].style.opacity = 0;
             queue[0][2] = true;
@@ -804,12 +813,14 @@ class Logic {
         if (holdQueue != undefined && holdQueue[0][4] != true) {
             if (timeDifference > -10 && timeDifference < 40) {
                 this.combo++;
+                this.missCombo = 0;
                 if (this.combo > this.maxCombo) {
                     this.maxCombo = this.combo;
                 }
                 this.perfectCount++;
                 this.changeText("PERFECT", this.combo, "#aaaaff");
                 this.addScore("PERFECT");
+                this.changeHealth("PERFECT");
                 this.changeSideBar(this.playerNum, this.score, this.combo);
                 holdQueue[0][0].style.opacity = 0;
                 holdQueue[0][4] = true;
@@ -821,7 +832,6 @@ class Logic {
      *  The method will repeatedly add arrows to the tracklist array at the bpm specified.
     */
     gameLoop() {
-        console.log(this.game.getTrack().length);
         if (this.game.getTrack().length != 0 && this.gameEnd == false) {
             let frame = this.getFrame();
             if (frame.getHold() == 0) {
@@ -839,7 +849,6 @@ class Logic {
             this.gameStart = false;
             this.displayStats();
             this.clearGame();
-            console.log("ENDED");
         }
     }
 
@@ -857,7 +866,6 @@ class Logic {
         } else if (text == "OKAY") {
             this.score += 300 * multiplier;
         }
-        console.log(this.score);
     }
 
     /**
@@ -881,6 +889,33 @@ class Logic {
         this.textBox.classList.remove("appear");
         this.textBox.offsetWidth;
         this.textBox.classList.add("appear");
+    }
+
+    changeHealth(text) {
+        let scale = this.combo / 50 + 1;
+        let missScale = this.missCombo / 3 + 1;
+        if (text == "MISS") {
+            this.calculateHealth(-5 * missScale);
+        } else if (text == "PERFECT") {
+            this.calculateHealth(2 * scale);
+        } else if (text == "GOOD") {
+            this.calculateHealth(1 * scale);
+        } else if (text == "OKAY") {
+            this.calculateHealth(0.5 * scale);
+        }
+        let ratio = 100/103;
+        let transform = this.health * ratio + 3;
+        this.healthMask.style.transform = `translateX(${transform}%)`;
+    }
+
+    calculateHealth(difference) {
+        if (difference + this.health > 100) {
+            this.health = 100;
+        } else if (difference + this.health < 0) {
+            this.health = 0;
+        } else {
+            this.health += difference;
+        }
     }
 
     changeSideBar(number, score, combo) {
@@ -937,10 +972,12 @@ class Logic {
                 currentTime = date.getSeconds() * 1000 + date.getMilliseconds();
                 if (currentTime > arrowTime + 2000 && queue[0][2] != true) {
                     this.combo = 0;
+                    this.missCombo++;
                     this.changeText("MISS", this.combo, "#ff6961");
                     this.missCount++;
                     this.addScore("MISS");
-                    this.changeSideBar(this.playerNum, this.score, this.combo);
+                    this.changeHealth("MISS");
+                    //this.changeSideBar(this.playerNum, this.score, this.combo);
                 }
                 queue.shift();
                 element.removeChild(arrow);
@@ -1033,8 +1070,10 @@ class Logic {
                 currentTime = date.getSeconds() * 1000 + date.getMilliseconds();
                 if (currentTime > arrowTime + 2000 && queue[0][4] != true) {
                     this.combo = 0;
+                    this.missCombo++;
                     this.changeText("MISS", this.combo, "#ff6961");
-                    this.changeSideBar(this.playerNum, this.score, this.combo);
+                    this.changeHealth("MISS");
+                    //this.changeSideBar(this.playerNum, this.score, this.combo);
                 }
                 queue.shift();
                 element.removeChild(arrowStart);
@@ -1052,8 +1091,10 @@ class Logic {
                     currentTime = date.getSeconds() * 1000 + date.getMilliseconds();
                     if (currentTime > arrowTime + this.pieceDelay * i + 2000 && queue[0][4] != true) {
                         this.combo = 0;
+                        this.missCombo++;
                         this.changeText("MISS", this.combo, "#ff6961");
-                        this.changeSideBar(this.playerNum, this.score, this.combo);
+                        this.changeHealth("MISS");
+                        //this.changeSideBar(this.playerNum, this.score, this.combo);
                     }
                     queue.shift();
                     hold = undefined;
@@ -1067,7 +1108,11 @@ class Logic {
                 currentTime = date.getSeconds() * 1000 + date.getMilliseconds();
                 if (currentTime > arrowTime + this.pieceDelay * holdLength + 2000 && queue[0][4] != true) {
                     this.combo = 0;
+                    this.missCombo++;
                     this.changeText("MISS", this.combo, "#ff6961");
+                    this.changeHealth("MISS");
+                    //this.changeSideBar(this.playerNum, this.score, this.combo);
+
                 }
                 queue.shift();
                 element.removeChild(arrowHold);
@@ -1101,7 +1146,6 @@ class Game {
             let framePositions = frameValues[0].split(",");
             this.track.push(new TimeFrame(framePositions, frameValues[1]));
         })
-        console.log("Parsed");
     }
 
     getTrack() {
