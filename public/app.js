@@ -367,6 +367,9 @@ class Logic {
         /** Sets previous page */
         this.previousPage = document.getElementById("menuscreen");
 
+        /** Audio element to play the beat songs */
+        this.audio;
+
         /** Stores the players current score and combo */
         this.combo = 0;
         this.missCombo = 0;
@@ -374,19 +377,18 @@ class Logic {
         this.health = 100;
         this.perfectCount = 0;
         this.goodCount = 0;
-        this.okayCount = 0;
+        this.okayCount = 0; 
         this.missCount = 0;
         this.maxCombo = 0;
 
         /** Songs stored in String Format. */
-        this.songList = [["Map 1", "1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n\n\n\n\n\n\n\n\n\n\n"],
-                        ["Map 2", "1,2 0\n1,2 0\n 0\n4,5 0\n3,5 0\n1,5 0\n2,3 0\n3 0\n4 0\n5 0\n1,2 0\n2,3 0\n3 0\n4 0\n5,1 0\n1,5 0\n2,4 0\n3 0\n4,2 0\n5,1 0\n1,5 0\n2 0\n3 0\n4,2 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n\n\n\n\n\n\n\n\n\n\n"],
-                        ["Map 3", "1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n\n\n\n\n\n\n\n\n\n\n\n\n"],
-                        ["Map 4", "1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n\n\n\n\n\n\n\n\n\n\n\n"]
+        this.songList = [["Map 1", "\n1 0\n1,2 0\n1 0\n1,2 0\n1 0\n1,2 0\n1 0\n1,2 0\n1 0\n1,2 0\n1 0\n1,2 0\n1 0\n1,2 0\n1 0\n1,2 0\n1 0\n1,2 0\n\n\n\n\n\n\n\n\n", "./music/Psycho.mp3", 2070, 140],
+                        ["Map 2", "1,2 0\n1,2 0\n 0\n4,5 0\n3,5 0\n1,5 0\n2,3 0\n3 0\n4 0\n5 0\n1,2 0\n2,3 0\n3 0\n4 0\n5,1 0\n1,5 0\n2,4 0\n3 0\n4,2 0\n5,1 0\n1,5 0\n2 0\n3 0\n4,2 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n\n\n\n\n\n\n\n\n\n\n", "./music/Psycho.mp3", 1000, 140],
+                        ["Map 3", "1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n\n\n\n\n\n\n\n\n\n\n\n\n", "./music/Psycho.mp3", 1000, 140],
+                        ["Map 4", "1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n\n\n\n\n\n\n\n\n\n\n\n", "./music/Psycho.mp3", 1000, 140]
                         ];
         this.currentSong = 0;
         this.updateCards();
-
     }
 
     /**
@@ -414,7 +416,8 @@ class Logic {
 
     /** Creates a new game with the track and bpm that is stroed in the logic */
     loadGame() {
-        this.setGame(this.songList[this.currentSong][1], 240);
+        let currentSong = this.songList[this.currentSong];
+        this.setGame(currentSong[1], currentSong[4]);
     }
 
     /** Selects the next song in the song list. */
@@ -485,6 +488,12 @@ class Logic {
     /** Starts a singleplayer game */
     singleplayerGame() {
         this.gameStart = true;
+        let currentSong = this.songList[this.currentSong];
+        this.audio = new Audio(currentSong[2]);
+        this.audio.volume = 0.4;
+        setTimeout(() => {
+            this.audio.play();
+        }, currentSong[3]);
         this.timerID = setInterval(this.gameLoop.bind(this), this.pieceDelay);
     }
 
@@ -847,8 +856,9 @@ class Logic {
         } else {
             clearInterval(this.timerID);
             this.gameStart = false;
-            this.displayStats();
+            this.audio.volume = 0;
             this.clearGame();
+            this.displayStats();
         }
     }
 
@@ -895,7 +905,7 @@ class Logic {
         let scale = this.combo / 50 + 1;
         let missScale = this.missCombo / 3 + 1;
         if (text == "MISS") {
-            this.calculateHealth(-5 * missScale);
+            this.calculateHealth(-10 * missScale);
         } else if (text == "PERFECT") {
             this.calculateHealth(2 * scale);
         } else if (text == "GOOD") {
