@@ -741,6 +741,20 @@ body {
     }
 }
 
+#gameboard #spacebar-to-start{
+    width: 100%;
+    color: #aaaaff;
+    font-size: 2rem;
+
+    top: 50%;
+    position: absolute;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+
+    transition: all 0.5s ease;
+}
+
 /* End Game Stats */
 
 #stats {
@@ -817,6 +831,10 @@ body {
 
 #stats .song-header h1 {
     font-size: 5rem;
+}
+
+#stats h1 #song-title {
+    color: #30aaaa;
 }
 
 #stats .song-header  h3 {

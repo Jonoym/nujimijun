@@ -36,9 +36,6 @@ class Controller {
         this.topRightMask = document.getElementById("mask-top-right");
         this.bottomRightMask = document.getElementById("mask-bottom-right");
 
-        /** Instantiates the elements for all the buttons to change screens */
-        document.getElementById("start").addEventListener('click', this.logic.startGame.bind(this.logic));
-
         /** Chooses to start a single game, displays the song selection page */
         document.getElementById("single").addEventListener('click', this.logic.displaySelectSingle.bind(this.logic));
 
@@ -85,6 +82,9 @@ class Controller {
         }
         if (event.keyCode === 99 || event.keyCode === 77) {
             this.bottomRightPress();
+        }
+        if (event.keyCode === 32) {
+            this.logic.startGame();
         }
         if (this.loadingScreen === true) {
             let loadingScreen = document.getElementById("loadscreen");
@@ -336,6 +336,9 @@ class Logic {
         /** Boolean to determine if the game has ended */
         this.gameEnd = false;
 
+        /** Checks if the game is ready to be started */
+        this.toStart = false;
+
         /** The queue at each position for normal arrow pieces */
         this.botLeftQueue = [];
         this.topLeftQueue = [];
@@ -380,12 +383,15 @@ class Logic {
         this.okayCount = 0; 
         this.missCount = 0;
         this.maxCombo = 0;
+        this.grade = "";
 
         /** Songs stored in String Format. */
-        this.songList = [["Map 1", "\n1 0\n1,2 0\n1 0\n1,2 0\n1 0\n1,2 0\n1 0\n1,2 0\n1 0\n1,2 0\n1 0\n1,2 0\n1 0\n1,2 0\n1 0\n1,2 0\n1 0\n1,2 0\n\n\n\n\n\n\n\n\n", "./music/Psycho.mp3", 2070, 140],
+        this.songList = [["Psycho", "\n1 0\n1,2 0\n5 0\n4,5 0\n2 0\n1,2 0\n4 0\n4,5 0\n1 0\n1,2 0\n5 0\n4,5  0\n2 0\n1,2 0\n4 0\n4,5 0\n1 0\n1,2 0\n5 0\n4,5 0\n2 0\n1,2 0\n4 0\n4,5 0\n1,5 0\n2,4 0\n1,2 0\n4,5 0\n1,3,4 0\n2,4 0\n" +
+                            "3,4 0\n4,5 0\n1,4 0\n3,4 0\n1,2 0\n1,4 0\n1,3 0\n1,5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n4 0\n5 0\n3 0\n1 0\n2 0\n1 0\n1,4 0\n2,5 0\n1,4 0\n2,5 0\n3 0\n3 0\n1,2 0\n4,5 0\n3 0\n3 0\n1,5 0\n1,5 0\n\n\n\n\n\n\n\n\n\n", "./music/Psycho.mp3", 2070, 140],
                         ["Map 2", "1,2 0\n1,2 0\n 0\n4,5 0\n3,5 0\n1,5 0\n2,3 0\n3 0\n4 0\n5 0\n1,2 0\n2,3 0\n3 0\n4 0\n5,1 0\n1,5 0\n2,4 0\n3 0\n4,2 0\n5,1 0\n1,5 0\n2 0\n3 0\n4,2 0\n5 0\n1 0\n2 0\n3 0\n4 0\n5 0\n\n\n\n\n\n\n\n\n\n\n", "./music/Psycho.mp3", 1000, 140],
-                        ["Map 3", "1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n1,2 0\n4,5  0\n\n\n\n\n\n\n\n\n\n\n\n\n", "./music/Psycho.mp3", 1000, 140],
-                        ["Map 4", "1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n\n\n\n\n\n\n\n\n\n\n\n", "./music/Psycho.mp3", 1000, 140]
+                        ["Map 3", "1,2 0\n4,5 0\n1,2 0\n4, 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n\n\n\n\n\n\n\n\n\n\n\n\n", "./music/Psycho.mp3", 1000, 140],
+                        ["Map 4", "1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n1,2,3 0\n\n\n\n\n\n\n\n\n\n\n\n", "./music/Psycho.mp3", 1000, 140],
+                        ["Map 5", "\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n1,2 0\n4,5 0\n\n\n\n\n\n\n\n", "./music/Psycho.mp3", 2070, 140]
                         ];
         this.currentSong = 0;
         this.updateCards();
@@ -487,14 +493,18 @@ class Logic {
 
     /** Starts a singleplayer game */
     singleplayerGame() {
-        this.gameStart = true;
-        let currentSong = this.songList[this.currentSong];
-        this.audio = new Audio(currentSong[2]);
-        this.audio.volume = 0.4;
-        setTimeout(() => {
-            this.audio.play();
-        }, currentSong[3]);
-        this.timerID = setInterval(this.gameLoop.bind(this), this.pieceDelay);
+        if (this.toStart) {
+            document.getElementById("spacebar-to-start").style.opacity = 0;
+            this.gameStart = true;
+            let currentSong = this.songList[this.currentSong];
+            this.audio = new Audio(currentSong[2]);
+            this.audio.volume = 0.4;
+            setTimeout(() => {
+                this.audio.play();
+            }, currentSong[3]);
+            this.timerID = setInterval(this.gameLoop.bind(this), this.pieceDelay);
+            this.toStart = false;
+        }
     }
 
     /** Starts a multiplayer game */
@@ -529,10 +539,12 @@ class Logic {
         this.loadGame();
         this.resetStats();
         this.changeHealth();
+        this.toStart = true;
         this.health = 100;
         let gameboard = document.getElementById("game");
         gameboard.style.opacity = 1;
         gameboard.style.zIndex = 998;
+        document.getElementById("spacebar-to-start").style.opacity = 0.85;
     }
     
     /** Displays the stat at the end of a game. */
@@ -547,6 +559,33 @@ class Logic {
         document.getElementById("okay").textContent = this.okayCount;
         document.getElementById("miss").textContent = this.missCount;
         document.getElementById("max-combo").textContent = this.maxCombo;
+        this.calculateGrade();
+        document.getElementById("grade").textContent = this.grade;
+        document.getElementById("song-title").textContent = this.songList[this.currentSong][0];
+    }
+
+    /** Calculates the letter grade. */
+    calculateGrade() {
+        let totalCount = this.perfectCount + this.goodCount + this.okayCount + this.missCount;
+        if (this.missCount == 0) {
+            if (this.okayCount == 0 && this.goodCount == 0) {
+                this.grade = "SSS";
+            } else if(this.okayCount == 0) {
+                this.grade = "SS"
+            } else {
+                this.grade = "S"
+            }
+        } else if (this.score > totalCount * 1000 * 0.9) {
+            this.grade = "A";
+        } else if (this.score > totalCount * 1000 * 0.85) {
+            this.grade = "B";
+        } else if (this.score > totalCount * 1000 * 0.8) {
+            this.grade = "C"; 
+        } else if (this.score > totalCount * 1000 * 0.7) {
+            this.grade = "D";
+        } else {
+            this.grade = "F";
+        }
     }
 
     /** Displays the view of the lobby, if this is the first time connecting, a socket
